@@ -616,7 +616,8 @@ options:
                 type: bool
               prefix_list:
                 description: Filter updates to/from this neighbor
-                type: dict
+                type: list
+                elements: dict
                 suboptions:
                   name:
                     description: Name of a prefix list
@@ -647,7 +648,8 @@ options:
                     type: bool
               route_map:
                 description: Apply route map to neighbor
-                type: dict
+                type: list
+                elements: dict
                 suboptions:
                   name:
                     description: Name of route map
