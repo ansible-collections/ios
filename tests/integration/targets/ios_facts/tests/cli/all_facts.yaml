@@ -24,4 +24,37 @@
   loop: "{{ lookup('dict', result.ansible_facts.ansible_net_filesystems_info, wantlist=True)\
     \ }}"
 
+- set_fact:
+    supported_network_resources:
+      - interfaces
+      - l2_interfaces
+      - vlans
+      - lag_interfaces
+      - lacp
+      - lacp_interfaces
+      - lldp_global
+      - lldp_interfaces
+      - l3_interfaces
+      - acl_interfaces
+      - static_routes
+      - acls
+      - ospfv2
+      - ospfv3
+      - ospf_interfaces
+      - bgp_global
+      - bgp_address_family
+
+- name: Collect list of available network resources for ios
+  register: result
+  cisco.ios.ios_facts:
+    available_network_resources: true
+    provider: '{{ cli }}'
+
+- name: Assert that correct available_network_resources returned
+  assert:
+    that:
+      - result.changed == false
+      - "{{ result['ansible_facts']['available_network_resources'] | symmetric_difference(supported_network_resources) |length\
+                      \ == 0 }}"
+
 - debug: msg="END cli/all_facts.yaml on connection={{ ansible_connection }}"

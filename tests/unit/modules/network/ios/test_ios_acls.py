@@ -129,6 +129,23 @@ class TestIosAclsModule(TestIosModule):
                                     ),
                                 ],
                             ),
+                            dict(
+                                name="test_acl",
+                                acl_type="extended",
+                                aces=[
+                                    dict(
+                                        grant="permit",
+                                        destination=dict(
+                                            address="192.0.2.0",
+                                            wildcard_bits="0.0.0.255",
+                                            port_protocol=dict(eq="www"),
+                                        ),
+                                        protocol="tcp",
+                                        sequence=100,
+                                        source=dict(host="192.0.2.1"),
+                                    )
+                                ],
+                            ),
                         ],
                     )
                 ],
@@ -142,6 +159,8 @@ class TestIosAclsModule(TestIosModule):
             "ip access-list extended in_to_out",
             "permit tcp host 10.1.1.2 host 172.16.1.1 eq telnet",
             "deny ip any any log-input test_logInput",
+            "ip access-list extended test_acl",
+            "100 permit tcp host 192.0.2.1 192.0.2.0 0.0.0.255 eq www",
         ]
         self.assertEqual(result["commands"], commands)
 

@@ -45,9 +45,7 @@ def _tmplt_access_list_entries(config_data):
             if config_data[type].get("address"):
                 command += " {address}".format(**config_data[type])
                 if config_data[type].get("wildcard_bits"):
-                    command += " {wildcard_bits}".format(
-                        **config_data["source"]
-                    )
+                    command += " {wildcard_bits}".format(**config_data[type])
             elif config_data[type].get("any"):
                 command += " any".format(**config_data[type])
             elif config_data[type].get("host"):
