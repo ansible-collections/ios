@@ -33,36 +33,35 @@ options:
         description:
           - The Address Family Indicator (AFI) for the  prefix list.
         type: str
-        choices:
-          - ipv4
-          - ipv6
-      name:
-        description: Name of a prefix-list
-        type: str
+        choices: ['ipv4', 'ipv6']
       prefix_lists:
         description: List of Prefix-lists.
         type: list
         elements: dict
         suboptions:
-          action:
-            description: Specify packets to be rejected or forwarded
+          name:
+            description: Name of a prefix-list
             type: str
-            choices: ['deny', 'permit']
-          sequence:
-            description: sequence number of an entry
-            type: int
-          description:
-            description:  Prefix-list specific description
-            type: str
-          address:
-            description:
-              - IP prefix <network>/<length>, e.g., A.B.C.D/nn
-              - IPv6 prefix <network>/<length>, e.g., X:X:X:X::X/<0-128>
-            type: str
-          match:
-            description: List of Prefix-lists.
-            type: dict
+          params:
+            description: Prefix-lists supported params.
+            type: list
+            elements: dict
             suboptions:
+              action:
+                description: Specify packets to be rejected or forwarded
+                type: str
+                choices: ['deny', 'permit']
+              sequence:
+                description: sequence number of an entry
+                type: int
+              description:
+                description:  Prefix-list specific description
+                type: str
+              address:
+                description:
+                  - IPv4 prefix <network>/<length>, e.g., A.B.C.D/nn
+                  - IPv6 prefix <network>/<length>, e.g., X:X:X:X::X/<0-128>
+                type: str
               ge:
                 description: Minimum prefix length to be matched
                 type: int

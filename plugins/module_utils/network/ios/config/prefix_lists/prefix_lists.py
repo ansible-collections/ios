@@ -67,9 +67,12 @@ class Prefix_lists(ResourceModule):
             want, have and desired state.
         """
         q(self.want, self.have)
-        return
-        wantd = {entry['name']: entry for entry in self.want}
-        haved = {entry['name']: entry for entry in self.have}
+        wantd = {entry['afi']: entry for entry in self.want}
+        haved = {entry['afi']: entry for entry in self.have}
+
+        # Convert each of config list to dict
+        for each in wantd, haved:
+            self.list_to_dict(each)
 
         # if state is merged, merge want onto have and then compare
         if self.state == "merged":
@@ -97,4 +100,55 @@ class Prefix_lists(ResourceModule):
            the `want` and `have` data with the `parsers` defined
            for the Prefix_lists network resource.
         """
-        self.compare(parsers=self.parsers, want=want, have=have)
+        if want != have and self.state != "deleted":
+            for k, v in iteritems(want['prefix_lists']):
+                if have.get("prefix_lists"):
+                    have_prefix = have["prefix_lists"].pop(k, {})
+                    for key, val in iteritems(v):
+                        have_prefix_param = have_prefix.pop(key, {})
+                        if have_prefix_param and val != have_prefix_param:
+                            if key == 'description':
+                                self.compare(
+                                    parsers=self.parsers,
+                                    want={'afi': want['afi'], 'name': k, 'prefix_list': {key: val}},
+                                    have={'afi': have['afi'], 'name': k, 'prefix_list': {key: have_prefix_param}},
+                                )
+                            else:
+                                self.compare(
+                                    parsers=self.parsers,
+                                    want=dict(),
+                                    have={'afi': have['afi'], 'name': k, 'prefix_list': have_prefix_param},
+                                )
+                                self.compare(
+                                    parsers=self.parsers,
+                                    want={'afi': want['afi'], 'name': k, 'prefix_list': val},
+                                    have={'afi': have['afi'], 'name': k, 'prefix_list': have_prefix_param},
+                                )
+                        elif val and val != have_prefix_param:
+                            if key == 'description':
+                                self.compare(
+                                    parsers=self.parsers,
+                                    want={'afi': want['afi'], 'name': k, 'prefix_list': {key: val}},
+                                    have=dict(),
+                                )
+                            else:
+                                self.compare(
+                                    parsers=self.parsers,
+                                    want={'afi': want['afi'], 'name': k, 'prefix_list': val},
+                                    have=dict(),
+                                )
+
+    def list_to_dict(self, param):
+        if param:
+            for key, val in iteritems(param):
+                if val.get("prefix_lists"):
+                    temp_prefix_list = {}
+                    for each in val["prefix_lists"]:
+                        temp_entries = dict()
+                        for every in each['params']:
+                            if every.get('description'):
+                                temp_entries.update(every)
+                            else:
+                                temp_entries.update({str(every['sequence']): every})
+                        temp_prefix_list.update({each['name']: temp_entries})
+                    val['prefix_lists'] = temp_prefix_list

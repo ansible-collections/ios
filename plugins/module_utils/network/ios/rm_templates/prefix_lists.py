@@ -20,7 +20,19 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.n
 )
 
 def _tmplt_set_prefix_lists(config_data):
-    pass
+    if 'prefix_list' in config_data:
+        if config_data.get('afi') == 'ipv4':
+            config_data['afi'] = 'ip'
+        cmd = "{afi} prefix-list {name}".format(**config_data)
+        if config_data['prefix_list'].get('description'):
+            cmd += ' description {description}'.format(**config_data['prefix_list'])
+        else:
+            cmd += ' seq {sequence} {action} {address}'.format(**config_data['prefix_list'])
+            if config_data['prefix_list'].get('ge'):
+                cmd += ' ge {ge}'.format(**config_data['prefix_list'])
+            if config_data['prefix_list'].get('le'):
+                cmd += ' le {le}'.format(**config_data['prefix_list'])
+        return cmd
 
 class Prefix_listsTemplate(NetworkTemplate):
     def __init__(self, lines=None):
@@ -45,18 +57,19 @@ class Prefix_listsTemplate(NetworkTemplate):
             "result": {
                 "{{ afi + '_' + name }}": {
                     "afi": "{{ 'ipv4' if afi is defined and afi=='ip' else 'ipv6' }}",
-                    "name": "{{ name if name is defined }}",
                     "prefix_lists": [
                         {
-                            "description": "{{ description.split('description ')[1] if description is defined }}",
-                            "sequence": "{{ sequence.split(' ')[1] if sequence is defined }}",
-                            "action": "{{ action if action is defined }}",
-                            "address": "{{ address if address is defined }}",
-                            "match":{
+                            "name": "{{ name if name is defined }}",
+                            "params":
+                                {
+                                "description": "{{ description.split('description ')[1] if description is defined }}",
+                                "sequence": "{{ sequence.split(' ')[1] if sequence is defined }}",
+                                "action": "{{ action if action is defined }}",
+                                "address": "{{ address if address is defined }}",
                                 "ge": "{{ ge.split(' ')[1] if ge is defined }}",
                                 "le": "{{ le.split(' ')[1] if le is defined }}",
                             }
-                        }
+                        },
                     ]
                 }
             },

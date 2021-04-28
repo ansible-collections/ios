@@ -40,22 +40,23 @@ class Prefix_listsArgs(object):  # pylint: disable=R0903
             "elements": "dict",
             "options": {
                 "afi": {"type": "str", "choices": ["ipv4", "ipv6"]},
-                "name": {"type": "str"},
                 "prefix_lists": {
                     "type": "list",
                     "elements": "dict",
                     "options": {
-                        "action": {"type": "str", "choices": ["deny", "permit"]},
-                        "sequence": {"type": "int"},
-                        "address": {"type": "str"},
-                        "match": {
-                            "type": "dict",
+                        "name": {"type": "str"},
+                        "params": {
+                            "type": "list",
+                            "elements": "dict",
                             "options": {
+                                "action": {"type": "str", "choices": ["deny", "permit"]},
+                                "description": {"type": "str"},
+                                "sequence": {"type": "int"},
+                                "address": {"type": "str"},
                                 "ge": {"type": "int"},
                                 "le": {"type": "int"},
                             },
                         },
-                        "description": {"type": "str"},
                     },
                 },
             },
