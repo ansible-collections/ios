@@ -72,39 +72,40 @@ class Prefix_listsFacts(object):
         temp = {}
         temp['afi'] = None
         temp['prefix_lists'] = []
-        for k, v in iteritems(objs):
-            temp_prefix_list = {}
-            temp_prefix_list['params'] = []
-            if not temp['afi'] or v['afi'] != temp['afi']:
-                if temp and temp['afi']:
-                    temp['prefix_lists'] = sorted(
-                        temp['prefix_lists'], key=lambda k, sk="name": str(k[sk])
-                    )
-                    final_objs.append(copy(temp))
-                    temp['prefix_lists'] = []
-                temp['afi'] = v['afi']
-            for each in v['prefix_lists']:
-                if not temp_prefix_list.get('name'):
-                    temp_prefix_list['name'] = each['name']
-                temp_prefix_list['params'].append(each['params'])
-            temp['prefix_lists'].append(temp_prefix_list)
-        if temp and temp['afi']:
-            temp['prefix_lists'] = sorted(
-                temp['prefix_lists'], key=lambda k, sk="name": str(k[sk])
+        if objs:
+            for k, v in iteritems(objs):
+                temp_prefix_list = {}
+                temp_prefix_list['params'] = []
+                if not temp['afi'] or v['afi'] != temp['afi']:
+                    if temp and temp['afi']:
+                        temp['prefix_lists'] = sorted(
+                            temp['prefix_lists'], key=lambda k, sk="name": str(k[sk])
+                        )
+                        final_objs.append(copy(temp))
+                        temp['prefix_lists'] = []
+                    temp['afi'] = v['afi']
+                for each in v['prefix_lists']:
+                    if not temp_prefix_list.get('name'):
+                        temp_prefix_list['name'] = each['name']
+                    temp_prefix_list['params'].append(each['params'])
+                temp['prefix_lists'].append(temp_prefix_list)
+            if temp and temp['afi']:
+                temp['prefix_lists'] = sorted(
+                    temp['prefix_lists'], key=lambda k, sk="name": str(k[sk])
+                )
+                final_objs.append(copy(temp))
+
+            final_objs = sorted(
+                final_objs, key=lambda k, sk="afi": k[sk]
             )
-            final_objs.append(copy(temp))
 
-        final_objs = sorted(
-            final_objs, key=lambda k, sk="afi": k[sk]
-        )
+            ansible_facts['ansible_network_resources'].pop('prefix_lists', None)
 
-        ansible_facts['ansible_network_resources'].pop('prefix_lists', None)
+            params = utils.remove_empties(
+                utils.validate_config(self.argument_spec, {"config": final_objs})
+            )
 
-        params = utils.remove_empties(
-            utils.validate_config(self.argument_spec, {"config": final_objs})
-        )
-
-        facts['prefix_lists'] = params['config']
-        ansible_facts['ansible_network_resources'].update(facts)
+            facts['prefix_lists'] = params['config']
+            ansible_facts['ansible_network_resources'].update(facts)
 
         return ansible_facts

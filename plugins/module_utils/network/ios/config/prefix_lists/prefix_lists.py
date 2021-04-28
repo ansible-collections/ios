@@ -49,6 +49,7 @@ class Prefix_lists(ResourceModule):
             tmplt=Prefix_listsTemplate(),
         )
         self.parsers = [
+            "prefix_list"
         ]
 
     def execute_module(self):
@@ -67,7 +68,8 @@ class Prefix_lists(ResourceModule):
             want, have and desired state.
         """
         q(self.want, self.have)
-        wantd = {entry['afi']: entry for entry in self.want}
+        wantd = {entry['afi']: entry for entry in self.want} if self.want else {}
+
         haved = {entry['afi']: entry for entry in self.have}
 
         # Convert each of config list to dict
@@ -88,11 +90,18 @@ class Prefix_lists(ResourceModule):
         # remove superfluous config for overridden and deleted
         if self.state in ["overridden", "deleted"]:
             for k, have in iteritems(haved):
-                if k not in wantd:
-                    self._compare(want={}, have=have)
+                for key, val in iteritems(have['prefix_lists']):
+                    if k == 'ipv4':
+                        k = 'ip'
+                    if wantd and key not in wantd.get('prefix_lists'):
+                        self.commands.append("no {0} prefix-list {1}".format(k, key))
+                    else:
+                        self.commands.append("no {0} prefix-list {1}".format(k, key))
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
+        q(self.commands)
+        self.commands = []
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
@@ -137,6 +146,34 @@ class Prefix_lists(ResourceModule):
                                     want={'afi': want['afi'], 'name': k, 'prefix_list': val},
                                     have=dict(),
                                 )
+                    if have_prefix and (self.state == 'replaced' or self.state == 'overridden'):
+                        for key, val in iteritems(have_prefix):
+                            if key == 'description':
+                                self.compare(
+                                    parsers=self.parsers,
+                                    want=dict(),
+                                    have={'afi': have['afi'], 'name': k, 'prefix_list': val},
+                                )
+                            else:
+                                self.compare(
+                                    parsers=self.parsers,
+                                    want=dict(),
+                                    have={'afi': have['afi'], 'name': k, 'prefix_list': val},
+                                )
+                elif v:
+                    for key, val in iteritems(v):
+                        if key == 'description':
+                            self.compare(
+                                parsers=self.parsers,
+                                want={'afi': want['afi'], 'name': k, 'prefix_list': {key: val}},
+                                have=dict(),
+                            )
+                        else:
+                            self.compare(
+                                parsers=self.parsers,
+                                want={'afi': want['afi'], 'name': k, 'prefix_list': val},
+                                have=dict(),
+                            )
 
     def list_to_dict(self, param):
         if param:
