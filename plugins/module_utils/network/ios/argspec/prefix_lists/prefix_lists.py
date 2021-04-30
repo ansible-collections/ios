@@ -45,14 +45,14 @@ class Prefix_listsArgs(object):  # pylint: disable=R0903
                     "elements": "dict",
                     "options": {
                         "name": {"type": "str"},
-                        "params": {
+                        "entries": {
                             "type": "list",
                             "elements": "dict",
                             "options": {
                                 "action": {"type": "str", "choices": ["deny", "permit"]},
                                 "description": {"type": "str"},
                                 "sequence": {"type": "int"},
-                                "address": {"type": "str"},
+                                "prefix": {"type": "str"},
                                 "ge": {"type": "int"},
                                 "le": {"type": "int"},
                             },

@@ -1,0 +1,127 @@
+---
+- debug:
+    msg: START Replaced ios_route_maps state for integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _populate_config.yaml
+
+- block:
+
+    - name: Replaced provided Route maps configuration
+      register: result
+      cisco.ios.ios_route_maps: &id001
+        config:
+          - route_map: test_1
+            entries:
+              - sequence: 10
+                action: deny
+                description: this is replaced route
+                match:
+                  ip:
+                    next_hop:
+                      acls:
+                        - 10
+                        - test1_acl
+                    flowspec:
+                      dest_pfx: true
+                      acls:
+                        - test_acl_1
+                        - test_acl_2
+                  length:
+                    minimum: 10
+                    maximum: 100
+                  metric:
+                    value: 10
+                    external: true
+                  security_group:
+                    source:
+                      - 10
+                      - 20
+                  mpls_label: true
+                set:
+                  extcommunity:
+                    vpn_distinguisher:
+                      address: 192.0.2.1:12
+                      additive: true
+                  metric:
+                    metric_value: 100
+                    deviation: plus
+                    eigrp_delay: 100
+                    metric_reliability: 10
+                    metric_bandwidth: 20
+                    mtu: 30
+          - route_map: test_replaced
+            entries:
+              - sequence: 10
+                action: deny
+                match:
+                  ipv6:
+                    address:
+                      acl: test_acl
+                    next_hop:
+                      prefix_list: test_new
+                    route_source:
+                      acl: route_src_acl
+                  security_group:
+                    source:
+                      - 15
+                      - 20
+                  local_preference:
+                    value:
+                      - 105
+                      - 110
+                  mpls_label: true
+                set:
+                  aigp_metric:
+                    value: 100
+                  automatic_tag: true
+                  extcommunity:
+                    cost:
+                      id: 10
+                      cost_value: 100
+                      pre_bestpath: true
+                  ip:
+                    address: 192.0.2.1
+                    df: 1
+                    next_hop:
+                      recursive:
+                        global_route: true
+                        address: 198.110.51.1
+                      verify_availability:
+                        address: 198.110.51.2
+                        sequence: 100
+                        track: 10
+                    precedence:
+                      critical: true
+        state: replaced
+
+    - name: Assert that before dict is correctly generated
+      assert:
+        that:
+          - "{{ merged['after'] | symmetric_difference(result['before']) | length\
+            \ == 0 }}"
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands'])\
+            \ | length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) | length\
+            \ == 0 }}"
+
+    - name: Replaced provided Route maps configuration
+        (IDEMPOTENT)
+      register: result
+      cisco.ios.ios_route_maps: *id001
+
+    - name: Assert that task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+  always:
+
+    - include_tasks: _remove_config.yaml

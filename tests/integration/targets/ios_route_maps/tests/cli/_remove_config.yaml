@@ -1,0 +1,4 @@
+---
+- name: Remove ALL Route maps configuration
+  cisco.ios.ios_route_maps:
+    state: deleted

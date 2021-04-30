@@ -1,0 +1,414 @@
+---
+merged:
+  before: {}
+
+  commands:
+    - route-map test_2 deny 10
+    - match security-group source tag 10 20
+    - match local-preference 105 55
+    - match mpls-label
+    - match ipv6 next-hop prefix-list test_new
+    - match ipv6 route-source route_src_acl
+    - match ipv6 address test_ip_acl
+    - set extcommunity cost pre-bestpath 10 100
+    - set ip df 1
+    - set ip next-hop recursive global 198.51.110.1
+    - set ip next-hop verify-availability 198.51.111.1 100 track 10
+    - set ip precedence critical
+    - set ip address prefix-list 192.0.2.1
+    - set automatic-tag
+    - set aigp-metric 100
+    - route-map test_1 deny 20
+    - continue 100
+    - match track 105
+    - match tag list test_match_tag
+    - match ipv6 address test_acl_20
+    - match route-type level-1
+    - match as-path 100 200
+    - match additional-paths advertise-set all group-best
+    - route-map test_1 deny 10
+    - description this is test route
+    - match security-group source tag 10 20
+    - match ip next-hop prefix-list test_1_new test_2_new
+    - match ip route-source 10
+    - match local-preference 100 50
+    - match mpls-label
+
+  after:
+    - entries:
+        - action: deny
+          description: this is test route
+          match:
+            ip:
+              next_hop:
+                prefix_lists:
+                  - test_1_new
+                  - test_2_new
+              route_source:
+                acls:
+                  - "10"
+            local_preference:
+              value:
+                - "100"
+                - "50"
+            mpls_label: true
+            security_group:
+              source:
+                - 10
+                - 20
+          sequence: 10
+        - action: deny
+          continue_entry:
+            entry_sequence: 100
+          match:
+            additional_paths:
+              all: true
+              group_best: true
+            as_path:
+              acls:
+                - 100
+                - 200
+            ipv6:
+              address:
+                acl: "test_acl_20"
+            route_type:
+              external:
+                set: true
+              level_1: true
+              nssa_external:
+                set: true
+            tag:
+              tag_list:
+                - test_match_tag
+            track: 105
+          sequence: 20
+      route_map: test_1
+    - entries:
+        - action: deny
+          match:
+            ipv6:
+              address:
+                acl: test_ip_acl
+              next_hop:
+                prefix_list: test_new
+              route_source:
+                acl: route_src_acl
+            local_preference:
+              value:
+                - "105"
+                - "55"
+            mpls_label: true
+            security_group:
+              source:
+                - 10
+                - 20
+          sequence: 10
+          set:
+            aigp_metric:
+              value: 100
+            automatic_tag: true
+            extcommunity:
+              cost:
+                cost_value: 100
+                id: "10"
+                pre_bestpath: true
+            ip:
+              address: "192.0.2.1"
+              df: 1
+              next_hop:
+                recursive:
+                  address: "198.51.110.1"
+                  global_route: true
+                verify_availability:
+                  address: "198.51.111.1"
+                  sequence: 100
+                  track: 10
+              precedence:
+                critical: true
+      route_map: test_2
+
+overridden:
+  commands:
+    - no route-map test_2
+    - route-map test_override deny 10
+    - match security-group source tag 15 20
+    - match local-preference 105 110
+    - match mpls-label
+    - match ipv6 next-hop prefix-list test_new
+    - match ipv6 route-source route_src_acl
+    - match ipv6 address test_acl
+    - set extcommunity cost pre-bestpath 10 100
+    - set ip df 1
+    - set ip next-hop recursive global 198.110.51.1
+    - set ip next-hop verify-availability 198.110.51.2 100 track 10
+    - set ip precedence critical
+    - set ip address prefix-list 192.0.2.1
+    - set automatic-tag
+    - set aigp-metric 100
+    - route-map test_1 deny 10
+    - no description this is test route
+    - description this is override route
+    - match ip flowspec dest-pfx test_acl_1 test_acl_2
+    - no match ip next-hop prefix-list test_1_new test_2_new
+    - match ip next-hop 10 test1_acl
+    - no match ip route-source 10
+    - match metric external 10
+    - match length 10 100
+    - no match local-preference 100 50
+    - set extcommunity vpn-distinguisher 192.0.2.1:12 additive
+    - set metric 100 +100 10 20 30
+    - no route-map test_1 deny 20
+
+  after:
+    - entries:
+        - action: deny
+          description: this is override route
+          match:
+            ip:
+              flowspec:
+                acls:
+                  - test_acl_1
+                  - test_acl_2
+                dest_pfx: true
+              next_hop:
+                acls:
+                  - "10"
+                  - "test1_acl"
+            length:
+              maximum: 100
+              minimum: 10
+            metric:
+              external: true
+              value: 10
+            mpls_label: true
+            security_group:
+              source:
+                - 10
+                - 20
+          sequence: 10
+          set:
+            extcommunity:
+              vpn_distinguisher:
+                additive: true
+                address: "192.0.2.1:12"
+            metric:
+              deviation: plus
+              eigrp_delay: 100
+              metric_bandwidth: 20
+              metric_reliability: 10
+              metric_value: 100
+              mtu: 30
+      route_map: test_1
+    - entries:
+        - action: deny
+          match:
+            ipv6:
+              address:
+                acl: test_acl
+              next_hop:
+                prefix_list: test_new
+              route_source:
+                acl: route_src_acl
+            local_preference:
+              value:
+                - "105"
+                - "110"
+            mpls_label: true
+            security_group:
+              source:
+                - 15
+                - 20
+          sequence: 10
+          set:
+            aigp_metric:
+              value: 100
+            automatic_tag: true
+            extcommunity:
+              cost:
+                cost_value: 100
+                id: "10"
+                pre_bestpath: true
+            ip:
+              address: "192.0.2.1"
+              df: 1
+              next_hop:
+                recursive:
+                  address: "198.110.51.1"
+                  global_route: true
+                verify_availability:
+                  address: "198.110.51.2"
+                  sequence: 100
+                  track: 10
+              precedence:
+                critical: true
+      route_map: test_override
+
+replaced:
+  commands:
+    - route-map test_replaced deny 10
+    - match security-group source tag 15 20
+    - match local-preference 105 110
+    - match mpls-label
+    - match ipv6 next-hop prefix-list test_new
+    - match ipv6 route-source route_src_acl
+    - match ipv6 address test_acl
+    - set extcommunity cost pre-bestpath 10 100
+    - set ip df 1
+    - set ip next-hop recursive global 198.110.51.1
+    - set ip next-hop verify-availability 198.110.51.2 100 track 10
+    - set ip precedence critical
+    - set ip address prefix-list 192.0.2.1
+    - set automatic-tag
+    - set aigp-metric 100
+    - route-map test_1 deny 10
+    - no description this is test route
+    - description this is replaced route
+    - match ip flowspec dest-pfx test_acl_1 test_acl_2
+    - no match ip next-hop prefix-list test_1_new test_2_new
+    - match ip next-hop 10 test1_acl
+    - no match ip route-source 10
+    - match metric external 10
+    - match length 10 100
+    - no match local-preference 100 50
+    - set extcommunity vpn-distinguisher 192.0.2.1:12 additive
+    - set metric 100 +100 10 20 30
+    - no route-map test_1 deny 20
+
+  after:
+    - entries:
+        - action: deny
+          description: this is replaced route
+          match:
+            ip:
+              flowspec:
+                acls:
+                  - test_acl_1
+                  - test_acl_2
+                dest_pfx: true
+              next_hop:
+                acls:
+                  - "10"
+                  - "test1_acl"
+            length:
+              maximum: 100
+              minimum: 10
+            metric:
+              external: true
+              value: 10
+            mpls_label: true
+            security_group:
+              source:
+                - 10
+                - 20
+          sequence: 10
+          set:
+            extcommunity:
+              vpn_distinguisher:
+                additive: true
+                address: "192.0.2.1:12"
+            metric:
+              deviation: plus
+              eigrp_delay: 100
+              metric_bandwidth: 20
+              metric_reliability: 10
+              metric_value: 100
+              mtu: 30
+      route_map: test_1
+    - entries:
+        - action: deny
+          match:
+            ipv6:
+              address:
+                acl: test_ip_acl
+              next_hop:
+                prefix_list: test_new
+              route_source:
+                acl: route_src_acl
+            local_preference:
+              value:
+                - "105"
+                - "55"
+            mpls_label: true
+            security_group:
+              source:
+                - 10
+                - 20
+          sequence: 10
+          set:
+            aigp_metric:
+              value: 100
+            automatic_tag: true
+            extcommunity:
+              cost:
+                cost_value: 100
+                id: "10"
+                pre_bestpath: true
+            ip:
+              address: "192.0.2.1"
+              df: 1
+              next_hop:
+                recursive:
+                  address: "198.51.110.1"
+                  global_route: true
+                verify_availability:
+                  address: "198.51.111.1"
+                  sequence: 100
+                  track: 10
+              precedence:
+                critical: true
+      route_map: test_2
+    - entries:
+        - action: deny
+          match:
+            ipv6:
+              address:
+                acl: test_acl
+              next_hop:
+                prefix_list: test_new
+              route_source:
+                acl: route_src_acl
+            local_preference:
+              value:
+                - "105"
+                - "110"
+            mpls_label: true
+            security_group:
+              source:
+                - 15
+                - 20
+          sequence: 10
+          set:
+            aigp_metric:
+              value: 100
+            automatic_tag: true
+            extcommunity:
+              cost:
+                cost_value: 100
+                id: "10"
+                pre_bestpath: true
+            ip:
+              address: "192.0.2.1"
+              df: 1
+              next_hop:
+                recursive:
+                  address: "198.110.51.1"
+                  global_route: true
+                verify_availability:
+                  address: "198.110.51.2"
+                  sequence: 100
+                  track: 10
+              precedence:
+                critical: true
+      route_map: test_replaced
+
+deleted:
+  commands:
+    - no route-map test_1
+
+deleted_all:
+  commands:
+    - no route-map test_1
+    - no route-map test_2
+
+  after:
+    as_number: "65000"

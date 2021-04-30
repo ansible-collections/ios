@@ -57,6 +57,7 @@ Name | Description
 [cisco.ios.ios_ospfv2](https://github.com/ansible-collections/cisco.ios/blob/main/docs/cisco.ios.ios_ospfv2_module.rst)|OSPFv2 resource module
 [cisco.ios.ios_ospfv3](https://github.com/ansible-collections/cisco.ios/blob/main/docs/cisco.ios.ios_ospfv3_module.rst)|OSPFv3 resource module
 [cisco.ios.ios_ping](https://github.com/ansible-collections/cisco.ios/blob/main/docs/cisco.ios.ios_ping_module.rst)|Tests reachability using ping from Cisco IOS network devices
+[cisco.ios.ios_route_maps](https://github.com/ansible-collections/cisco.ios/blob/main/docs/cisco.ios.ios_route_maps_module.rst)|Route maps resource module
 [cisco.ios.ios_static_route](https://github.com/ansible-collections/cisco.ios/blob/main/docs/cisco.ios.ios_static_route_module.rst)|(deprecated, removed after 2022-06-01) Manage static IP routes on Cisco IOS network devices
 [cisco.ios.ios_static_routes](https://github.com/ansible-collections/cisco.ios/blob/main/docs/cisco.ios.ios_static_routes_module.rst)|Static routes resource module
 [cisco.ios.ios_system](https://github.com/ansible-collections/cisco.ios/blob/main/docs/cisco.ios.ios_system_module.rst)|Manage the system attributes on Cisco IOS devices

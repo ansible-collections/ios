@@ -68,6 +68,9 @@ from ansible_collections.cisco.ios.plugins.module_utils.network.ios.facts.bgp_gl
 from ansible_collections.cisco.ios.plugins.module_utils.network.ios.facts.bgp_address_family.bgp_address_family import (
     Bgp_AddressFamilyFacts,
 )
+from ansible_collections.cisco.ios.plugins.module_utils.network.ios.facts.route_maps.route_maps import (
+    Route_mapsFacts,
+)
 from ansible_collections.cisco.ios.plugins.module_utils.network.ios.facts.prefix_lists.prefix_lists import (
     Prefix_listsFacts,
 )
@@ -101,6 +104,7 @@ FACT_RESOURCE_SUBSETS = dict(
     ospf_interfaces=Ospf_InterfacesFacts,
     bgp_global=Bgp_globalFacts,
     bgp_address_family=Bgp_AddressFamilyFacts,
+    route_maps=Route_mapsFacts,
     prefix_lists=Prefix_listsFacts,
 )
 

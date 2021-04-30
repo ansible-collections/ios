@@ -1,0 +1,19 @@
+---
+- debug:
+    msg: START ios_route_maps parsed integration tests on connection={{ ansible_connection
+      }}
+
+- name: Parse the commands for provided configuration
+  register: result
+  cisco.ios.ios_route_maps:
+    running_config: "{{ lookup('file', '_parsed.cfg') }}"
+    state: parsed
+
+- debug:
+    msg: "{{ merged['after'] | symmetric_difference(result['parsed']) }}"
+
+- assert:
+    that:
+      - result.changed == false
+      - "{{ merged['after'] | symmetric_difference(result['parsed']) |length\
+    \ == 0 }}"

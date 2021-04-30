@@ -75,7 +75,7 @@ class Prefix_listsFacts(object):
         if objs:
             for k, v in iteritems(objs):
                 temp_prefix_list = {}
-                temp_prefix_list['params'] = []
+                temp_prefix_list['entries'] = []
                 if not temp['afi'] or v['afi'] != temp['afi']:
                     if temp and temp['afi']:
                         temp['prefix_lists'] = sorted(
@@ -87,7 +87,7 @@ class Prefix_listsFacts(object):
                 for each in v['prefix_lists']:
                     if not temp_prefix_list.get('name'):
                         temp_prefix_list['name'] = each['name']
-                    temp_prefix_list['params'].append(each['params'])
+                    temp_prefix_list['entries'].append(each['entries'])
                 temp['prefix_lists'].append(temp_prefix_list)
             if temp and temp['afi']:
                 temp['prefix_lists'] = sorted(

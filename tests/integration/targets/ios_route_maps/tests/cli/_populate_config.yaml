@@ -1,0 +1,92 @@
+---
+- name: Populate Route maps Configuration
+  cisco.ios.ios_route_maps:
+    config:
+      - route_map: test_1
+        entries:
+          - sequence: 10
+            action: deny
+            description: this is test route
+            match:
+              ip:
+                next_hop:
+                  prefix_lists:
+                    - test_1_new
+                    - test_2_new
+                route_source:
+                  acls:
+                    - 10
+              security_group:
+                source:
+                  - 10
+                  - 20
+              local_preference:
+                value:
+                  - 50
+                  - 100
+              mpls_label: true
+          - sequence: 20
+            action: deny
+            continue_entry:
+              entry_sequence: 100
+            match:
+              additional_paths:
+                all: true
+                group_best: true
+              as_path:
+                acls:
+                  - 100
+                  - 200
+              ipv6:
+                address:
+                  acl: test_acl_20
+              route_type:
+                level_1: true
+              tag:
+                tag_list:
+                  - test_match_tag
+              track: 105
+      - route_map: test_2
+        entries:
+          - sequence: 10
+            action: deny
+            match:
+              ipv6:
+                address:
+                  acl: test_ip_acl
+                next_hop:
+                  prefix_list: test_new
+                route_source:
+                  acl: route_src_acl
+              security_group:
+                source:
+                  - 10
+                  - 20
+              local_preference:
+                value:
+                  - 55
+                  - 105
+              mpls_label: true
+            set:
+              aigp_metric:
+                value: 100
+              automatic_tag: true
+              extcommunity:
+                cost:
+                  id: 10
+                  cost_value: 100
+                  pre_bestpath: true
+              ip:
+                address: 192.0.2.1
+                df: 1
+                next_hop:
+                  recursive:
+                    global_route: true
+                    address: 198.51.110.1
+                  verify_availability:
+                    address: 198.51.111.1
+                    sequence: 100
+                    track: 10
+                precedence:
+                  critical: true
+    state: merged

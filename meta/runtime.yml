@@ -102,6 +102,10 @@ plugin_routing:
       redirect: cisco.ios.ios
     ping:
       redirect: cisco.ios.ios
+    ios_route_maps:
+      redirect: cisco.ios.ios
+    route_maps:
+      redirect: cisco.ios.ios
     ios_static_route:
       redirect: cisco.ios.ios
     static_route:
@@ -202,6 +206,8 @@ plugin_routing:
       redirect: cisco.ios.ios_ospfv2
     ping:
       redirect: cisco.ios.ios_ping
+    route_maps:
+      redirect: cisco.ios.ios_route_maps
     static_route:
       redirect: cisco.ios.ios_static_route
       deprecation:

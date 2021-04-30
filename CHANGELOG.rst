@@ -4,6 +4,27 @@ Cisco Ios Collection Release Notes
 
 .. contents:: Topics
 
+v2.1.0
+======
+
+Minor Changes
+-------------
+- Add support for ansible_network_resources key allows to fetch the available resources for a platform (https://github.com/ansible-collections/cisco.ios/pull/292).
+- Add ios_route_maps Resource Module (https://github.com/ansible-collections/cisco.ios/pull/297).
+
+Security Fixes
+--------------
+- To fix Cisco IOS no log issue and add ignore txt for 2.12 (https://github.com/ansible-collections/cisco.ios/pull/304).
+
+Bugfixes
+--------
+- To fix the wrong arg being passed in acls template function (https://github.com/ansible-collections/cisco.ios/pull/305).
+
+New Modules
+-----------
+
+- ios_route_maps - Manage the attributes of Route maps on Cisco IOS.
+
 v2.0.1
 ======
 

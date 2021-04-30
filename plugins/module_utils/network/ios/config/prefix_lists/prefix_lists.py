@@ -82,26 +82,45 @@ class Prefix_lists(ResourceModule):
 
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
-            haved = {
-                k: v for k, v in iteritems(haved) if k in wantd or not wantd
-            }
+            temp = None
+            for k, v in iteritems(haved):
+                if k in wantd:
+                    if wantd[k].get('prefix_lists'):
+                        want_afi_name = wantd[k].get('prefix_lists', {})
+                        haved[k]['prefix_lists'] = {key: val for key, val in iteritems(v.get('prefix_lists')) if key in want_afi_name}
+                elif wantd:
+                    temp = k
+            if temp:
+                haved.pop(k)
             wantd = {}
-
-        # remove superfluous config for overridden and deleted
-        if self.state in ["overridden", "deleted"]:
             for k, have in iteritems(haved):
                 for key, val in iteritems(have['prefix_lists']):
                     if k == 'ipv4':
                         k = 'ip'
-                    if wantd and key not in wantd.get('prefix_lists'):
+                    self.commands.append("no {0} prefix-list {1}".format(k, key))
+
+        # remove superfluous config for overridden and deleted
+        if self.state == "overridden":
+            for k, have in iteritems(haved):
+                want_afi = wantd.get(k, {})
+                for key, val in iteritems(have['prefix_lists']):
+                    if k == 'ipv4':
+                        k = 'ip'
+                    if want_afi and key not in want_afi.get('prefix_lists'):
                         self.commands.append("no {0} prefix-list {1}".format(k, key))
-                    else:
-                        self.commands.append("no {0} prefix-list {1}".format(k, key))
+            # for k, have in iteritems(haved):
+            #     for key, val in iteritems(have['prefix_lists']):
+            #         if k == 'ipv4':
+            #             k = 'ip'
+            #         if wantd and key not in wantd.get('prefix_lists'):
+            #             self.commands.append("no {0} prefix-list {1}".format(k, key))
+            #         else:
+            #             self.commands.append("no {0} prefix-list {1}".format(k, key))
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
-        q(self.commands)
-        self.commands = []
+        # q(self.commands)
+        # self.commands = []
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
@@ -182,7 +201,7 @@ class Prefix_lists(ResourceModule):
                     temp_prefix_list = {}
                     for each in val["prefix_lists"]:
                         temp_entries = dict()
-                        for every in each['params']:
+                        for every in each['entries']:
                             if every.get('description'):
                                 temp_entries.update(every)
                             else:

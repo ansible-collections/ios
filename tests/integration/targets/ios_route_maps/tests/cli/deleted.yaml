@@ -1,0 +1,56 @@
+---
+- debug:
+    msg: Start Deleted integration state for ios_route_maps ansible_connection={{
+      ansible_connection }}
+
+- block:
+    - include_tasks: _remove_config.yaml
+    - include_tasks: _populate_config.yaml
+
+    - name: Delete provided Route maps config
+      register: result
+      cisco.ios.ios_route_maps: &id001
+        config:
+          - route_map: test_1
+        state: deleted
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ deleted['commands'] | symmetric_difference(result['commands']) |\
+            \ length == 0 }}"
+
+    - name: Delete provided Route maps config (IDEMPOTENT)
+      register: result
+      cisco.ios.ios_route_maps: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result.changed == false
+
+    - include_tasks: _remove_config.yaml
+    - include_tasks: _populate_config.yaml
+
+    - name: Delete ALL provided Route maps config
+      register: result
+      cisco.ios.ios_route_maps: &id002
+        state: deleted
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ deleted_all['commands'] | symmetric_difference(result['commands']) |\
+            \ length == 0 }}"
+
+    - name: Delete ALL provided Route maps config (IDEMPOTENT)
+      register: result
+      cisco.ios.ios_route_maps: *id002
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result.changed == false
+  always:
+
+    - include_tasks: _remove_config.yaml

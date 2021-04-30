@@ -496,16 +496,16 @@ Examples
     #
     # vios#sh lldp interface
     # GigabitEthernet0/0:
-    #    Tx: disabled
-    #    Rx: disabled
-    #    Tx state: IDLE
-    #    Rx state: WAIT FOR FRAME
-    #
-    # GigabitEthernet0/1:
     #    Tx: enabled
     #    Rx: enabled
     #    Tx state: IDLE
     #    Rx state: WAIT FOR FRAME
+    #
+    # GigabitEthernet0/1:
+    #    Tx: disabled
+    #    Rx: disabled
+    #    Tx state: IDLE
+    #    Rx state: INIT
     #
     # GigabitEthernet0/2:
     #    Tx: disabled

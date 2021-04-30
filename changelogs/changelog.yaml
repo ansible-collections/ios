@@ -218,3 +218,17 @@ releases:
       minor_changes:
       - Remove tests/sanity/requirements.txt (https://github.com/ansible-collections/cisco.ios/pull/261).
     release_date: '2021-03-30'
+  2.1.0:
+    changes:
+      bugfixes:
+      - To fix the wrong arg being passed in acls template function (https://github.com/ansible-collections/cisco.ios/pull/305).
+      security_fixes:
+      - To fix Cisco IOS no log issue and add ignore txt for 2.12 (https://github.com/ansible-collections/cisco.ios/pull/304).
+      minor_changes:
+      - Add support for ansible_network_resources key allows to fetch the available resources for a platform (https://github.com/ansible-collections/cisco.ios/pull/292).
+      - Add ios_route_maps Resource Module (https://github.com/ansible-collections/cisco.ios/pull/297).
+      modules:
+      - description: Manage the attributes of Route maps on Cisco IOS.
+        name: ios_route_maps
+        namespace: ''
+    release_date: '2021-04-27'

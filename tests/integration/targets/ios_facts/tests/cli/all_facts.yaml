@@ -43,6 +43,7 @@
       - ospf_interfaces
       - bgp_global
       - bgp_address_family
+      - route_maps
 
 - name: Collect list of available network resources for ios
   register: result

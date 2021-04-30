@@ -3,7 +3,10 @@ plugins/module_utils/network/ios/config/bgp_global/bgp_global.py compile-2.6!ski
 plugins/module_utils/network/ios/config/bgp_address_family/bgp_address_family.py compile-2.6!skip
 plugins/module_utils/network/ios/config/ospf_interfaces/ospf_interfaces.py compile-2.6!skip
 plugins/module_utils/network/ios/config/ospfv3/ospfv3.py compile-2.6!skip
+plugins/module_utils/network/ios/config/route_maps/route_maps.py compile-2.6!skip
+plugins/modules/ios_route_maps.py import-2.6!skip
 plugins/module_utils/network/ios/config/bgp_global/bgp_global.py import-2.6!skip
 plugins/module_utils/network/ios/config/bgp_address_family/bgp_address_family.py import-2.6!skip
 plugins/module_utils/network/ios/config/ospf_interfaces/ospf_interfaces.py import-2.6!skip
 plugins/module_utils/network/ios/config/ospfv3/ospfv3.py import-2.6!skip
+plugins/module_utils/network/ios/config/route_maps/route_maps.py import-2.6!skip
