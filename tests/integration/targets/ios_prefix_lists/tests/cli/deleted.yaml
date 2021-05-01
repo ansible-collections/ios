@@ -31,7 +31,7 @@
       assert:
         that:
           - result.changed == false
-    
+
     - include_tasks: _remove_config.yaml
     - include_tasks: _populate_config.yaml
 
