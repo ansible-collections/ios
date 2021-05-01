@@ -1,0 +1,76 @@
+---
+- debug:
+    msg: START Replaced ios_prefix_lists state for integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _populate_config.yaml
+
+- block:
+
+    - name: Replaced provided Prefix lists configuration
+      register: result
+      cisco.ios.ios_prefix_lists: &id001
+        config:
+          - afi: ipv4
+            prefix_lists:
+              - name: 10
+                entries:
+                  - description: this is replace test
+                  - action: deny
+                    prefix: 12.0.0.0/8
+                    ge: 15
+                    sequence: 15
+                  - action: deny
+                    prefix: 14.0.0.0/8
+                    ge: 20
+                    le: 21
+                    sequence: 20
+              - name: test_replace
+                entries:
+                  - description: this is replace test
+                  - action: deny
+                    prefix: 35.0.0.0/8
+                    ge: 20
+                    sequence: 10
+          - afi: ipv6
+            prefix_lists:
+              - name: test_ipv6
+                entries:
+                  - description: this is ipv6 replace test
+                  - action: deny
+                    prefix: 2001:DB8:0:4::/64
+                    ge: 80
+                    le: 100
+                    sequence: 10
+        state: replaced
+
+    - name: Assert that before dict is correctly generated
+      assert:
+        that:
+          - "{{ merged['after'] | symmetric_difference(result['before']) | length\
+            \ == 0 }}"
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands'])\
+            \ | length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) | length\
+            \ == 0 }}"
+
+    - name: Replaced provided Prefix lists configuration
+        (IDEMPOTENT)
+      register: result
+      cisco.ios.ios_prefix_lists: *id001
+
+    - name: Assert that task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+  always:
+
+    - include_tasks: _remove_config.yaml

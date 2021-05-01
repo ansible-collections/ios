@@ -27,12 +27,9 @@ The arg spec for the cisco.ios_prefix_lists module
 """
 
 
-class Prefix_listsArgs(object):  # pylint: disable=R0903
+class Prefix_listsArgs(object):
     """The arg spec for the cisco.ios_prefix_lists module
     """
-
-    def __init__(self, **kwargs):
-        pass
 
     argument_spec = {
         "config": {
@@ -49,7 +46,10 @@ class Prefix_listsArgs(object):  # pylint: disable=R0903
                             "type": "list",
                             "elements": "dict",
                             "options": {
-                                "action": {"type": "str", "choices": ["deny", "permit"]},
+                                "action": {
+                                    "type": "str",
+                                    "choices": ["deny", "permit"],
+                                },
                                 "description": {"type": "str"},
                                 "sequence": {"type": "int"},
                                 "prefix": {"type": "str"},

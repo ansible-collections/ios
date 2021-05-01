@@ -19,20 +19,26 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.n
     NetworkTemplate,
 )
 
+
 def _tmplt_set_prefix_lists(config_data):
-    if 'prefix_list' in config_data:
-        if config_data.get('afi') == 'ipv4':
-            config_data['afi'] = 'ip'
+    if "prefix_list" in config_data:
+        if config_data.get("afi") == "ipv4":
+            config_data["afi"] = "ip"
         cmd = "{afi} prefix-list {name}".format(**config_data)
-        if config_data['prefix_list'].get('description'):
-            cmd += ' description {description}'.format(**config_data['prefix_list'])
+        if config_data["prefix_list"].get("description"):
+            cmd += " description {description}".format(
+                **config_data["prefix_list"]
+            )
         else:
-            cmd += ' seq {sequence} {action} {prefix}'.format(**config_data['prefix_list'])
-            if config_data['prefix_list'].get('ge'):
-                cmd += ' ge {ge}'.format(**config_data['prefix_list'])
-            if config_data['prefix_list'].get('le'):
-                cmd += ' le {le}'.format(**config_data['prefix_list'])
+            cmd += " seq {sequence} {action} {prefix}".format(
+                **config_data["prefix_list"]
+            )
+            if config_data["prefix_list"].get("ge"):
+                cmd += " ge {ge}".format(**config_data["prefix_list"])
+            if config_data["prefix_list"].get("le"):
+                cmd += " le {le}".format(**config_data["prefix_list"])
         return cmd
+
 
 class Prefix_listsTemplate(NetworkTemplate):
     def __init__(self, lines=None):
@@ -52,7 +58,9 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \s*(?P<address>(?:[0-9]{1,3}\.){3}[0-9]{1,3}/\d+|(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/\d+)*
                 \s*(?P<ge>ge\s\d+)*
                 \s*(?P<le>le\s\d+)*
-                $""", re.VERBOSE),
+                $""",
+                re.VERBOSE,
+            ),
             "setval": _tmplt_set_prefix_lists,
             "result": {
                 "{{ afi + '_' + name }}": {
@@ -60,19 +68,18 @@ class Prefix_listsTemplate(NetworkTemplate):
                     "prefix_lists": [
                         {
                             "name": "{{ name if name is defined }}",
-                            "entries":
-                                {
+                            "entries": {
                                 "description": "{{ description.split('description ')[1] if description is defined }}",
                                 "sequence": "{{ sequence.split(' ')[1] if sequence is defined }}",
                                 "action": "{{ action if action is defined }}",
                                 "prefix": "{{ address if address is defined }}",
                                 "ge": "{{ ge.split(' ')[1] if ge is defined }}",
                                 "le": "{{ le.split(' ')[1] if le is defined }}",
-                            }
-                        },
-                    ]
+                            },
+                        }
+                    ],
                 }
             },
-            "shared": True
-        },
+            "shared": True,
+        }
     ]

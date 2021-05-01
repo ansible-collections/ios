@@ -1,0 +1,66 @@
+---
+- debug:
+    msg: Start ios_prefix_lists rendered integration tests ansible_connection={{
+      ansible_connection }}
+
+- block:
+    - name: Render the commands for provided Prefix lists configuration
+      register: result
+      cisco.ios.ios_prefix_lists: &id001
+        config:
+          - afi: ipv4
+            prefix_lists:
+              - name: 10
+                entries:
+                  - description: this is test description
+                  - action: deny
+                    prefix: 1.0.0.0/8
+                    le: 15
+                    sequence: 5
+                  - action: deny
+                    prefix: 35.0.0.0/8
+                    ge: 10
+                    sequence: 10
+                  - action: deny
+                    prefix: 12.0.0.0/8
+                    ge: 15
+                    sequence: 15
+                  - action: deny
+                    prefix: 14.0.0.0/8
+                    ge: 20
+                    le: 21
+                    sequence: 20
+              - name: test
+                entries:
+                  - description: this is test
+                  - action: deny
+                    prefix: 12.0.0.0/8
+                    ge: 15
+                    sequence: 50
+              - name: test_prefix
+                entries:
+                  - description: this is for prefix-list
+                  - action: deny
+                    prefix: 35.0.0.0/8
+                    ge: 10
+                    le: 15
+                    sequence: 5
+                  - action: deny
+                    prefix: 35.0.0.0/8
+                    ge: 20
+                    sequence: 10
+          - afi: ipv6
+            prefix_lists:
+              - name: test_ipv6
+                entries:
+                  - description: this is ipv6 prefix-list
+                  - action: deny
+                    prefix: 2001:DB8:0:4::/64
+                    ge: 80
+                    sequence: 10
+        state: rendered
+
+    - assert:
+        that:
+          - result.changed == false
+          - result.rendered|symmetric_difference(merged.commands) == []
