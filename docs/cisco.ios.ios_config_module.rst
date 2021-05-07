@@ -507,7 +507,7 @@ Notes
 
 .. note::
    - Tested against IOS 15.6
-   - Abbreviated commands are NOT idempotent, see L (Network FAQ,../network/user_guide/faq.html#why-do-the-config-modules-always-return-changed-true-with-abbreviated-commands).
+   - Abbreviated commands are NOT idempotent, see `Network FAQ <../network/user_guide/faq.html#why-do-the-config-modules-always-return-changed-true-with-abbreviated-commands>`_.
    - To ensure idempotency and correct diff the configuration lines in the relevant module options should be similar to how they appear if present in the running configuration on device including the indentation.
    - For more information on using Ansible to manage network devices see the :ref:`Ansible Network Guide <network_guide>`
    - For more information on using Ansible to manage Cisco devices see the `Cisco integration page <https://www.ansible.com/integrations/networks/cisco>`_.
