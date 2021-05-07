@@ -177,7 +177,7 @@ class L3_Interfaces(ConfigBase):
                 if each["name"] == interface["name"]:
                     break
             else:
-                if "." in interface["name"]:
+                if any(x in interface["name"] for x in [".", "Vlan"]):
                     commands.extend(
                         self._set_config(interface, dict(), module)
                     )
@@ -230,7 +230,7 @@ class L3_Interfaces(ConfigBase):
                 if each["name"] == interface["name"]:
                     break
             else:
-                if "." in interface["name"]:
+                if any(x in interface["name"] for x in [".", "Vlan"]):
                     commands.extend(
                         self._set_config(interface, dict(), module)
                     )
