@@ -28,7 +28,7 @@ from ansible_collections.cisco.ios.plugins.module_utils.network.ios.rm_templates
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.resource_module import (
     ResourceModule,
 )
-
+import q
 
 class Acls(ResourceModule):
     """
@@ -64,7 +64,7 @@ class Acls(ResourceModule):
         :returns: the commands necessary to migrate the current configuration
         to the desired configuration
         """
-
+        q(self.want, self.have)
         if self.want:
             wantd = self.want
         else:
@@ -189,7 +189,7 @@ class Acls(ResourceModule):
                         every_have.update({"afi": each_have.get("afi")})
                         self.addcmd(every_have, "acls_name", True)
                     count += 1
-
+        q(wantd, haved)
         for w in wantd:
             want_in_have = False
             if haved:
@@ -212,6 +212,8 @@ class Acls(ResourceModule):
                 for e_w in w["acls"]:
                     e_w.update({"afi": w["afi"]})
                     self._compare(want=e_w, have={})
+        q(self.commands)
+        self.commands = []
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
@@ -220,12 +222,13 @@ class Acls(ResourceModule):
            for the Ospf_interfaces network resource.
         """
         parsers = ["aces"]
-
+        q(want, have)
         if want.get("aces"):
             cmd_added = True
             for each in want.get("aces"):
                 set_want = True
                 if have.get("aces"):
+                    temp = 0
                     for each_have in have.get("aces"):
                         if each.get("source") == each_have.get(
                             "source"
@@ -257,7 +260,10 @@ class Acls(ResourceModule):
                                 each.update(
                                     {"protocol": each_have.get("protocol")}
                                 )
-                            if each != each_have:
+                            if each == each_have:
+                                del have['aces'][temp]
+                                break
+                            else:
                                 if cmd_added:
                                     self.addcmd(have, "acls_name", False)
                                     cmd_added = False
@@ -284,6 +290,8 @@ class Acls(ResourceModule):
                                 have={},
                             )
                             set_want = False
+                            del have['aces'][temp]
+                        temp += 1
                 else:
                     if cmd_added:
                         self.addcmd(want, "acls_name", False)
@@ -302,4 +310,15 @@ class Acls(ResourceModule):
                         parsers=parsers,
                         want={"aces": each, "afi": want["afi"]},
                         have=dict(),
+                    )
+        if self.state in ["overridden", "replaced"]:
+            if have.get("aces"):
+                for each in have["aces"]:
+                    if cmd_added:
+                        self.addcmd(want, "acls_name", False)
+                        cmd_added = False
+                    self.compare(
+                        parsers=parsers,
+                        want={},
+                        have={"aces": each, "afi": have["afi"]},
                     )

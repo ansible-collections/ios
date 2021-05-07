@@ -253,6 +253,25 @@ class TestIosAclsModule(TestIosModule):
                         afi="ipv4",
                         acls=[
                             dict(
+                                name="110",
+                                aces=[
+                                    dict(
+                                        grant="permit",
+                                        log=dict(user_cookie="testLog"),
+                                        protocol="tcp",
+                                        sequence="10",
+                                        source=dict(
+                                            address="198.51.100.0",
+                                            wildcard_bits="0.0.0.255",
+                                        ),
+                                        destination=dict(
+                                            any=True,
+                                            port_protocol=dict(eq="22"),
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            dict(
                                 name="replace_acl",
                                 acl_type="extended",
                                 aces=[
@@ -282,6 +301,8 @@ class TestIosAclsModule(TestIosModule):
         )
         result = self.execute_module(changed=True)
         commands = [
+            "ip access-list extended 110",
+            "no 20 deny icmp 192.0.2.0 0.0.0.255 192.0.3.0 0.0.0.255 echo dscp ef ttl eq 10",
             "ip access-list extended replace_acl",
             "deny tcp 198.51.100.0 0.0.0.255 198.51.101.0 0.0.0.255 eq telnet ack tos 12",
         ]
