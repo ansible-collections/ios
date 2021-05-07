@@ -93,42 +93,45 @@ class Bgp_AddressFamilyFacts(object):
                         temp_dict["safi"] = temp[0]
                 neighbor = v.get("neighbor")
                 if neighbor:
+                    def _update_neighor_list(neighbor_list, temp):
+                        set = False
+                        for each in neighbor_list:
+                            if neighbor_identifier == each['address']:
+                                each.update(temp)
+                                set = True
+                        if not neighbor_list or not set:
+                            neighbor_list.append(utils.remove_empties(temp))
                     neighbor_list = []
-                    temp_slow_peer = []
+                    temp_param_list = []
                     temp = {}
+                    temp_param = None
                     neighbor_identifier = None
                     for each in neighbor:
-                        if (
-                            each.get("address")
-                            or each.get("ipv6_address")
-                            or each.get("tag")
-                        ) != neighbor_identifier:
-                            if temp:
-                                if temp_slow_peer:
-                                    temp.update({"slow_peer": temp_slow_peer})
-                                neighbor_list.append(temp)
-                                temp = {}
-                            neighbor_identifier = (
-                                each.get("address")
-                                or each.get("ipv6_address")
-                                or each.get("tag")
-                            )
-                            if "address" in each:
-                                temp["address"] = neighbor_identifier
-                            elif "ipv6_address" in each:
-                                temp["ipv6_address"] = neighbor_identifier
+                        if temp_param and not each.get(temp_param) and temp:
+                            temp.update({temp_param: temp_param_list})
+                            _update_neighor_list(neighbor_list, temp)
+                            temp_param_list = []
+                            temp = {}
+                        if (each.get('address') or each.get('ipv6_address') or each.get('tag')) != neighbor_identifier:
+                            neighbor_identifier = each.get('address') or each.get('ipv6_address') or each.get('tag')
+                            if 'address' in each:
+                                temp['address'] = neighbor_identifier
+                            elif 'ipv6_address' in each:
+                                temp['ipv6_address'] = neighbor_identifier
                             else:
-                                temp["tag"] = neighbor_identifier
-                        for every in ["address", "ipv6_address", "tag"]:
-                            if every in each:
-                                each.pop(every)
+                                temp['tag'] = neighbor_identifier
                         temp.update(each)
-                        slow_peer_val = each.get("slow_peer")
-                        if slow_peer_val:
-                            temp_slow_peer.append(slow_peer_val[0])
+                        for param in ['prefix_list', 'route_map', 'slow_peer']:
+                            param_val = each.get(param)
+                            if param_val:
+                                temp_param_list.append(param_val[0])
+                                temp_param = param
+                                break
                     if temp:
-                        temp.update({"slow_peer": temp_slow_peer})
-                        neighbor_list.append(temp)
+                        if temp_param:
+                            temp.update({temp_param: temp_param_list})
+                        _update_neighor_list(neighbor_list, temp)
+                        temp_param_list = []
                         temp = {}
                     v["neighbor"] = neighbor_list
                 v.update(temp_dict)
