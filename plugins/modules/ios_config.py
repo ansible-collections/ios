@@ -476,13 +476,6 @@ def main():
         if module.params["backup"]:
             result["__backup__"] = contents
     if any((module.params["lines"], module.params["src"])):
-        msg = (
-            "To ensure idempotency and correct diff the input configuration lines should be"
-            " similar to how they appear if present in the running configuration on device"
-        )
-        if module.params["src"]:
-            msg += " including the indentation"
-        warnings.append(msg)
         match = module.params["match"]
         replace = module.params["replace"]
         path = module.params["parents"]
@@ -586,6 +579,22 @@ def main():
                         "diff": {"before": str(before), "after": str(after)},
                     }
                 )
+
+    if result.get("changed") and any(
+        (module.params["src"], module.params["lines"])
+    ):
+        msg = (
+            "To ensure idempotency and correct diff the input configuration lines should be"
+            " similar to how they appear if present in"
+            " the running configuration on device"
+        )
+        if module.params["src"]:
+            msg += " including the indentation"
+        if "warnings" in result:
+            result["warnings"].append(msg)
+        else:
+            result["warnings"] = msg
+
     module.exit_json(**result)
 
 
