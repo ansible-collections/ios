@@ -471,7 +471,7 @@ def _tmplt_af_neighbor(config_data):
                 self_cmd += " allpaths"
             commands.append(self_cmd)
         if "prefix_list" in config_data["neighbor"]:
-            self_cmd = "{0} prefix_list {name}".format(
+            self_cmd = "{0} prefix-list {name}".format(
                 cmd, **config_data["neighbor"]["prefix_list"]
             )
             if config_data["neighbor"]["prefix_list"].get("in"):

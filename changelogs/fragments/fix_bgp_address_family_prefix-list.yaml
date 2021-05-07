@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - update "prefix_list" typo in "plugins/module_utils/network/ios/rm_templates/bgp_address_family.py"
