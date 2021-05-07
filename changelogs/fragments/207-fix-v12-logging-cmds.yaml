@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - ios_logging - Fix check for v12 in the os_version string (https://github.com/ansible-collections/cisco.ios/issues/207).

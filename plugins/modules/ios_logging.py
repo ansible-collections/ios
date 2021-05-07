@@ -230,7 +230,7 @@ def map_obj_to_commands(updates, module, os_version):
         if state == "absent" and w in have:
             if dest:
                 if dest == "host":
-                    if "12." in os_version:
+                    if os_version.startswith("12."):
                         commands.append("no logging {0}".format(name))
                     else:
                         commands.append("no logging host {0}".format(name))
@@ -254,7 +254,7 @@ def map_obj_to_commands(updates, module, os_version):
                 if not present:
                     commands.append("logging facility {0}".format(facility))
             if dest == "host":
-                if "12." in os_version:
+                if os_version.startswith("12."):
                     commands.append("logging {0}".format(name))
                 else:
                     commands.append("logging host {0}".format(name))
