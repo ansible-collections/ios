@@ -27,6 +27,7 @@ from ansible_collections.cisco.ios.plugins.module_utils.network.ios.utils.utils 
 from ansible_collections.cisco.ios.plugins.module_utils.network.ios.argspec.l3_interfaces.l3_interfaces import (
     L3_InterfacesArgs,
 )
+from ansible.module_utils.connection import ConnectionError
 
 
 class L3_InterfacesFacts(object):
@@ -58,7 +59,14 @@ class L3_InterfacesFacts(object):
         objs = []
 
         if not data:
-            data = connection.get("show running-config | section ^interface")
+            try:
+                data = connection.get("sh running-config | section ^interface")
+            except ConnectionError as e:
+                if "Invalid input detected at" in e.message:
+                    data = connection.get("sh running-config | begin ^interface")
+                    data = "\n".join(re.findall(r'^interface.+?(?<=\n\!)$',data, re.S|re.M))
+                else:
+                    raise
         # operate on a collection of resource x
         config = ("\n" + data).split("\ninterface ")
         for conf in config:

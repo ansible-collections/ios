@@ -14,7 +14,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-
+import re
 from copy import deepcopy
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
     utils,
@@ -28,6 +28,7 @@ from ansible_collections.cisco.ios.plugins.module_utils.network.ios.argspec.stat
 from ansible_collections.cisco.ios.plugins.module_utils.network.ios.utils.utils import (
     is_valid_ip,
 )
+from ansible.module_utils.connection import ConnectionError
 
 
 class Static_RoutesFacts(object):
@@ -50,9 +51,16 @@ class Static_RoutesFacts(object):
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
     def get_static_routes_data(self, connection):
-        return connection.get(
-            "sh running-config | section ^ip route|ipv6 route"
-        )
+        try:
+            return connection.get(
+                "sh running-config | section ^ip route|ipv6 route"
+            )
+        except Exception as e:
+            if "Invalid input detected at" in e.message:
+                data = connection.get("sh running-config | begin ^ip route|ipv6 route")
+                return "\n".join(re.findall(r'^(?:ip|ipv6) route.*$',data, re.M))
+            else:
+                raise
 
     def populate_facts(self, connection, ansible_facts, data=None):
         """ Populate the facts for static_routes
@@ -221,8 +229,9 @@ class Static_RoutesFacts(object):
                     else:
                         hops["interface"] = route[1]
                         afi["afi"] = "ipv4"
-                        if is_valid_ip(route[2]):
-                            hops["forward_router_address"] = route[2]
+                        if len(route) >= 3:
+                            if is_valid_ip(route[2]):
+                                hops["forward_router_address"] = route[2]
             try:
                 temp_list = each.split(" ")
                 if "tag" in temp_list:

@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - Support ios 12.2 by using regex instead of the ios section command

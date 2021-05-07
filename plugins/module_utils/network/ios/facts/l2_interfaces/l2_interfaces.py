@@ -26,6 +26,7 @@ from ansible_collections.cisco.ios.plugins.module_utils.network.ios.utils.utils 
 from ansible_collections.cisco.ios.plugins.module_utils.network.ios.argspec.l2_interfaces.l2_interfaces import (
     L2_InterfacesArgs,
 )
+from ansible.module_utils.connection import ConnectionError
 
 
 class L2_InterfacesFacts(object):
@@ -47,7 +48,14 @@ class L2_InterfacesFacts(object):
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
     def get_l2_interfaces_data(self, connection):
-        return connection.get("show running-config | section ^interface")
+        try:
+            return connection.get("sh running-config | section ^interface")
+        except Exception as e:
+            if "Invalid input detected at" in e.message:
+                data = connection.get("sh running-config | begin ^interface")
+                return "\n".join(re.findall(r'^interface.+?(?<=\n\!)$',data, re.S|re.M))
+            else:
+                raise
 
     def populate_facts(self, connection, ansible_facts, data=None):
         """ Populate the facts for interfaces

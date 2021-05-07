@@ -27,6 +27,7 @@ from ansible_collections.cisco.ios.plugins.module_utils.network.ios.rm_templates
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network_template import (
     NetworkTemplate,
 )
+from ansible.module_utils.connection import ConnectionError
 
 
 class Ospfv3Facts(object):
@@ -38,7 +39,14 @@ class Ospfv3Facts(object):
         self.argument_spec = Ospfv3Args.argument_spec
 
     def get_ospfv3_data(self, connection):
-        return connection.get("sh running-config | section ^router ospfv3")
+        try:
+            return connection.get("sh running-config | section ^router ospfv3")
+        except Exception as e:
+            if "Invalid input detected at" in e.message:
+                data = connection.get("sh running-config | ^router ospfv3")
+                return "\n".join(re.findall(r'router ospfv3.+?(?<=\n\!)$',data, re.S|re.M))
+            else:
+                raise
 
     def parse(self, net_template_obj):
         """ Overrided network template parse

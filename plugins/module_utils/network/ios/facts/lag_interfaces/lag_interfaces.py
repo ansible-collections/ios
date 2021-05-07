@@ -28,6 +28,7 @@ from ansible_collections.cisco.ios.plugins.module_utils.network.ios.utils.utils 
 from ansible_collections.cisco.ios.plugins.module_utils.network.ios.argspec.lag_interfaces.lag_interfaces import (
     Lag_interfacesArgs,
 )
+from ansible.module_utils.connection import ConnectionError
 
 
 class Lag_interfacesFacts(object):
@@ -59,7 +60,15 @@ class Lag_interfacesFacts(object):
         objs = []
 
         if not data:
-            data = connection.get("show running-config | section ^interface")
+            try:
+                data = connection.get("show running-config | section ^interface")
+            except ConnectionError as e:
+                if "Invalid input detected at" in e.message:
+                    data = connection.get("sh running-config | begin ^interface")
+                    data = "\n".join(re.findall(r'^interface.+?(?<=\n\!)$',data, re.S|re.M))
+                else:
+                    raise
+
         # operate on a collection of resource x
         config = ("\n" + data).split("\ninterface ")
         for conf in config:

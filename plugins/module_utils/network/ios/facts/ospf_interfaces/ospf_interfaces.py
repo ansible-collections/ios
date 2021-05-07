@@ -15,6 +15,7 @@ based on the configuration.
 """
 
 from copy import deepcopy
+import re
 
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
@@ -26,6 +27,7 @@ from ansible_collections.cisco.ios.plugins.module_utils.network.ios.rm_templates
 from ansible_collections.cisco.ios.plugins.module_utils.network.ios.argspec.ospf_interfaces.ospf_interfaces import (
     Ospf_InterfacesArgs,
 )
+from ansible.module_utils.connection import ConnectionError
 
 
 class Ospf_InterfacesFacts(object):
@@ -47,7 +49,14 @@ class Ospf_InterfacesFacts(object):
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
     def get_ospf_interfaces_data(self, connection):
-        return connection.get("sh running-config | section ^interface")
+        try:
+            return connection.get("show running-config | section ^interface")
+        except ConnectionError as e:
+            if "Invalid input detected at" in e.message:
+                data = connection.get("sh running-config | begin ^interface")
+                return "\n".join(re.findall(r'^interface.+?(?<=\n\!)$',data, re.S|re.M))
+            else:
+                raise
 
     def populate_facts(self, connection, ansible_facts, data=None):
         """ Populate the facts for Ospf_interfaces network resource

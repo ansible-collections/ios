@@ -13,6 +13,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 from copy import deepcopy
+import re
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
     utils,
@@ -26,6 +27,7 @@ from ansible_collections.cisco.ios.plugins.module_utils.network.ios.rm_templates
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network_template import (
     NetworkTemplate,
 )
+from ansible.module_utils.connection import ConnectionError
 
 
 class Ospfv2Facts(object):
@@ -47,7 +49,14 @@ class Ospfv2Facts(object):
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
     def get_ospfv2_data(self, connection):
-        return connection.get("sh running-config | section ^router ospf")
+        try:
+            return connection.get("sh running-config | section ^router ospf")
+        except Exception as e:
+            if "Invalid input detected at" in e.message:
+                data = connection.get("sh running-config | ^router ospf")
+                return "\n".join(re.findall(r'router ospf.+?(?<=\n\!)$',data, re.S|re.M))
+            else:
+                raise
 
     def populate_facts(self, connection, ansible_facts, data=None):
         """ Populate the facts for ospfv2
