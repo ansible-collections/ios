@@ -75,6 +75,7 @@ options:
         - IPv6 address to be set for the Layer-3 interface mentioned in I(name) option.
         - The address format is <ipv6 address>/<mask>, the mask is number in range
           0-128 eg. fd5d:12c9:2201:1::1/64
+        - Can be 'dhcp' for DHCP or 'autoconfig' for SLAAC.
         type: list
         elements: dict
         suboptions:

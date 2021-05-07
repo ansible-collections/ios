@@ -401,7 +401,8 @@ class L3_Interfaces(ConfigBase):
             if ipv6:
                 for each in ipv6:
                     ipv6_dict = dict(each)
-                    validate_ipv6(ipv6_dict.get("address"), module)
+                    if ipv6_dict.get("address") not in ("dhcp", "autoconfig"):
+                        validate_ipv6(ipv6_dict.get("address"), module)
                     cmd = "ipv6 address {0}".format(ipv6_dict.get("address"))
                     add_command_to_config_list(interface, cmd, commands)
 

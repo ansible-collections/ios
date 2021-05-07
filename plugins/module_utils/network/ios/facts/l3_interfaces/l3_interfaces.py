@@ -137,10 +137,6 @@ class L3_InterfacesFacts(object):
         ipv6_all = re.findall(r"ipv6 address (\S+)", conf)
         for each in ipv6_all:
             each_ipv6 = dict()
-            if "autoconfig" in each:
-                each_ipv6["autoconfig"] = True
-            if "dhcp" in each:
-                each_ipv6["dhcp"] = True
             each_ipv6["address"] = each.lower()
             ipv6.append(each_ipv6)
         config["ipv6"] = ipv6

@@ -13,9 +13,11 @@ merged:
     - ip address 192.0.2.1 255.255.255.0
     - interface GigabitEthernet0/1
     - ip address dhcp client-id GigabitEthernet0/0 hostname test.com
+    - ipv6 address autoconfig
     - interface GigabitEthernet0/2
     - ip address 198.51.100.1 255.255.255.0 secondary
     - ip address 198.51.100.2 255.255.255.0
+    - ipv6 address dhcp
     - ipv6 address 2001:db8:0:3::/64
   after:
     - name: loopback888
@@ -29,12 +31,15 @@ merged:
         - address: dhcp
           dhcp_client: 0
           dhcp_hostname: test.com
+      ipv6:
+        - address: autoconfig
       name: GigabitEthernet0/1
     - ipv4:
         - address: 198.51.100.1 255.255.255.0
           secondary: true
         - address: 198.51.100.2 255.255.255.0
       ipv6:
+        - address: dhcp
         - address: 2001:db8:0:3::/64
       name: GigabitEthernet0/2
 replaced:
@@ -53,6 +58,7 @@ replaced:
         - address: 192.0.2.2 255.255.255.0
       ipv6:
         - address: 2001:db8:0:3::/64
+        - address: autoconfig
       name: GigabitEthernet0/2
   commands:
     - interface GigabitEthernet0/1
@@ -95,6 +101,7 @@ overridden:
         - address: 192.0.2.2 255.255.255.0
       ipv6:
         - address: 2001:db8:0:3::/64
+        - address: autoconfig
       name: GigabitEthernet0/2
   commands:
     - interface GigabitEthernet0/1
@@ -132,6 +139,7 @@ deleted:
         - address: 192.0.2.2 255.255.255.0
       ipv6:
         - address: 2001:db8:0:3::/64
+        - address: autoconfig
       name: GigabitEthernet0/2
   commands:
     - interface GigabitEthernet0/1
@@ -163,6 +171,7 @@ gathered:
         - address: 192.0.2.2 255.255.255.0
       ipv6:
         - address: 2001:db8:0:3::/64
+        - address: autoconfig
       name: GigabitEthernet0/2
 parsed:
   config:
@@ -176,6 +185,7 @@ parsed:
           secondary: true
         - address: 198.51.100.2 255.255.255.0
       ipv6:
+        - address: autoconfig
         - address: 2001:db8:0:3::/64
       name: GigabitEthernet0/2
 rtt:
