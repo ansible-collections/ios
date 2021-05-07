@@ -14,3 +14,4 @@
     lines: "no vrf definition ospf_vrf\nno vrf definition blue\n"
   ansible.netcommon.cli_config:
     config: '{{ lines }}'
+  ignore_errors: true

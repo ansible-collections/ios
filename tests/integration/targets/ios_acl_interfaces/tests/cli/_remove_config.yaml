@@ -1,9 +1,4 @@
 ---
 - name: Remove Config
-  vars:
-    lines: "interface GigabitEthernet 0/1\nno ip access-group 110 in\nno ip access-group\
-      \ 100 out\nno ip access-group 123 out\nno ipv6 traffic-filter temp_v6 in\n\
-      no ipv6 traffic-filter test_v6 out\ninterface GigabitEthernet 0/2\nno ip access-group\
-      \ 110 in\nno ip access-group 123 out\n"
-  ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+  cisco.ios.ios_acl_interfaces:
+    state: deleted

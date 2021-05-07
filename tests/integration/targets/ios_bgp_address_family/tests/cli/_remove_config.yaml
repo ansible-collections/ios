@@ -11,12 +11,14 @@
     commands:
       - no rd 45000:2
     parents: vrf definition blue
+  ignore_errors: true
 
 - name: Delete and Clean VRF configuration
   vars:
     lines: "no vrf definition blue\n"
   ansible.netcommon.cli_config:
     config: '{{ lines }}'
+  ignore_errors: true
 
 - name: Remove BGP Global Config
   cisco.ios.ios_bgp_global:

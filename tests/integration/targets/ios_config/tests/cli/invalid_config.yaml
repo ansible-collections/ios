@@ -1,0 +1,19 @@
+---
+- debug: msg="START cli/invalid_config.yaml on connection={{ ansible_connection }}"
+
+- name: configure with invalid config
+  register: result
+  ignore_errors: true
+  cisco.ios.ios_config:
+    commands:
+      - address-family ipv4 multicast vrf Management
+      - aggregate-address 192.0.2.1 255.255.255.255 as-confed-set
+    parents: router bgp 65000
+
+- assert:
+    that:
+      - result.changed == false
+      - result.failed == true
+      - result.msg == 'MODULE FAILURE\nSee stdout/stderr for the exact error'
+
+- debug: msg="END cli/invalid_config.yaml on connection={{ ansible_connection }}"

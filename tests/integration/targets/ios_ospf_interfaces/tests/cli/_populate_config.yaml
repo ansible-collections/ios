@@ -1,4 +1,10 @@
 ---
+- name: Populate interface with IP
+  vars:
+    lines: "interface GigabitEthernet 0/1\nip address 192.0.2.1 255.255.255.0"
+  ansible.netcommon.cli_config:
+    config: '{{ lines }}'
+
 - name: Populate OSPF Interfaces Configuration
   cisco.ios.ios_ospf_interfaces:
     config:

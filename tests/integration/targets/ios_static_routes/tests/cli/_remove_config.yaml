@@ -9,3 +9,4 @@
       \ tag 105 name test_v6\nno vrf definition ansible_temp_vrf\n"
   ansible.netcommon.cli_config:
     config: '{{ lines }}'
+  ignore_errors: true

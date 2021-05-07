@@ -24,7 +24,7 @@
                 dhcp_hostname: test.com
           - name: GigabitEthernet0/2
             ipv4:
-              - address: 198.51.100.1/24
+              - address: 198.51.101.1/24
                 secondary: true
               - address: 198.51.100.2/24
             ipv6:
@@ -52,7 +52,7 @@
           - name: GigabitEthernet0/2
             ipv4:
               - address: 198.51.100.1/24
-              - address: 198.51.100.2/24
+              - address: 198.51.102.2/24
                 secondary: true
         state: overridden
 

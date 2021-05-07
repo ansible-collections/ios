@@ -58,6 +58,7 @@
     commands:
       - show lldp neighbors
     provider: '{{ cli }}'
+  ignore_errors: true
 
 - block:
 
