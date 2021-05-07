@@ -1,0 +1,4 @@
+---
+- name: Remove ALL Prefix Lists configuration
+  cisco.ios.ios_prefix_lists:
+    state: deleted

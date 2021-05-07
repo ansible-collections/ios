@@ -1,0 +1,84 @@
+---
+- debug:
+    msg: Start Deleted integration state for ios_prefix_lists ansible_connection={{
+      ansible_connection }}
+
+- block:
+    - include_tasks: _remove_config.yaml
+    - include_tasks: _populate_config.yaml
+
+    - name: Delete prefix list based on prefix ame configured
+      register: result
+      cisco.ios.ios_prefix_lists: &id001
+        config:
+          - afi: ipv4
+            prefix_lists:
+              - name: 10
+              - name: test_prefix
+        state: deleted
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ deleted_name['commands'] | symmetric_difference(result['commands']) |\
+            \ length == 0 }}"
+
+    - name: Delete provided Prefix lists config (IDEMPOTENT)
+      register: result
+      cisco.ios.ios_prefix_lists: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result.changed == false
+
+    - include_tasks: _remove_config.yaml
+    - include_tasks: _populate_config.yaml
+
+    - name: Delete prefix list based on AFI configured
+      register: result
+      cisco.ios.ios_prefix_lists: &id002
+        config:
+          - afi: ipv4
+        state: deleted
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ deleted_afi['commands'] | symmetric_difference(result['commands']) |\
+            \ length == 0 }}"
+
+    - name: Delete provided Prefix lists config (IDEMPOTENT)
+      register: result
+      cisco.ios.ios_prefix_lists: *id002
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result.changed == false
+
+    - include_tasks: _remove_config.yaml
+    - include_tasks: _populate_config.yaml
+
+    - name: Delete ALL provided Prefix lists config
+      register: result
+      cisco.ios.ios_prefix_lists: &id003
+        state: deleted
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ deleted_all['commands'] | symmetric_difference(result['commands']) |\
+            \ length == 0 }}"
+
+    - name: Delete ALL provided Prefix lists config (IDEMPOTENT)
+      register: result
+      cisco.ios.ios_prefix_lists: *id003
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result.changed == false
+  always:
+
+    - include_tasks: _remove_config.yaml
