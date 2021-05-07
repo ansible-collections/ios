@@ -157,6 +157,7 @@ EXAMPLES = """
 #  switchport access vlan 20
 #  media-type rj45
 #  negotiation auto
+# testing
 
 - name: Merge provided configuration with device configuration
   cisco.ios.ios_l2_interfaces:
