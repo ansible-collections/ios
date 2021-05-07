@@ -130,7 +130,7 @@ class TestIosAclsModule(TestIosModule):
                                 ],
                             ),
                             dict(
-                                name="test_acl",
+                                name="test_acl_merge",
                                 acl_type="extended",
                                 aces=[
                                     dict(
@@ -156,13 +156,13 @@ class TestIosAclsModule(TestIosModule):
         commands = [
             "ip access-list standard std_acl",
             "deny 192.0.2.0 0.0.0.255",
+            "ip access-list extended test_acl_merge",
+            "100 permit tcp host 192.0.2.1 192.0.2.0 0.0.0.255 eq www",
             "ip access-list extended in_to_out",
             "permit tcp host 10.1.1.2 host 172.16.1.1 eq telnet",
             "deny ip any any log-input test_logInput",
-            "ip access-list extended test_acl",
-            "100 permit tcp host 192.0.2.1 192.0.2.0 0.0.0.255 eq www",
         ]
-        self.assertEqual(result["commands"], commands)
+        self.assertEqual(sorted(result["commands"]), sorted(commands))
 
     def test_ios_acls_merged_idempotent(self):
         set_module_args(
@@ -170,11 +170,8 @@ class TestIosAclsModule(TestIosModule):
                 config=[
                     dict(
                         afi="ipv4",
-                        acls=[dict(acl_type="standard", name="test_acl")],
-                    ),
-                    dict(
-                        afi="ipv4",
                         acls=[
+                            dict(acl_type="standard", name="test_acl"),
                             dict(
                                 name="110",
                                 aces=[
@@ -210,7 +207,7 @@ class TestIosAclsModule(TestIosModule):
                                         ttl=dict(eq=10),
                                     ),
                                 ],
-                            )
+                            ),
                         ],
                     ),
                     dict(
@@ -293,11 +290,8 @@ class TestIosAclsModule(TestIosModule):
                 config=[
                     dict(
                         afi="ipv4",
-                        acls=[dict(acl_type="standard", name="test_acl")],
-                    ),
-                    dict(
-                        afi="ipv4",
                         acls=[
+                            dict(acl_type="standard", name="test_acl"),
                             dict(
                                 name="110",
                                 aces=[
@@ -333,9 +327,9 @@ class TestIosAclsModule(TestIosModule):
                                         ttl=dict(eq=10),
                                     ),
                                 ],
-                            )
+                            ),
                         ],
-                    ),
+                    )
                 ],
                 state="replaced",
             )
@@ -394,11 +388,8 @@ class TestIosAclsModule(TestIosModule):
                 config=[
                     dict(
                         afi="ipv4",
-                        acls=[dict(acl_type="standard", name="test_acl")],
-                    ),
-                    dict(
-                        afi="ipv4",
                         acls=[
+                            dict(acl_type="standard", name="test_acl"),
                             dict(
                                 name="110",
                                 aces=[
@@ -434,7 +425,7 @@ class TestIosAclsModule(TestIosModule):
                                         ttl=dict(eq=10),
                                     ),
                                 ],
-                            )
+                            ),
                         ],
                     ),
                     dict(

@@ -13,13 +13,10 @@
       register: result
       cisco.ios.ios_acls: &id001
         config:
-
           - afi: ipv4
             acls:
-
               - name: 110
                 aces:
-
                   - grant: deny
                     protocol_options:
                       tcp:
@@ -38,10 +35,24 @@
                     dscp: ef
                     ttl:
                       eq: 10
-
+              - name: 123
+                aces:
+                  - grant: deny
+                    protocol_options:
+                      tcp:
+                        ack: true
+                    source:
+                      address: 198.51.100.0
+                      wildcard_bits: 0.0.0.255
+                    destination:
+                      address: 198.51.101.0
+                      wildcard_bits: 0.0.0.255
+                      port_protocol:
+                        eq: telnet
+                    tos:
+                      service_value: 12
               - name: 150
                 aces:
-
                   - grant: deny
                     protocol_options:
                       tcp:
@@ -63,7 +74,7 @@
 
     - assert:
         that:
-          - result.commands|length == 8
+          - result.commands|length == 9
           - result.changed == true
           - result.commands|symmetric_difference(overridden.commands) == []
 

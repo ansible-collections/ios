@@ -34,9 +34,6 @@ class AclsArgs(object):
     """The arg spec for the ios_acls module
     """
 
-    def __init__(self, **kwargs):
-        pass
-
     argument_spec = {
         "config": {
             "elements": "dict",

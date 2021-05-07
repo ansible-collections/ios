@@ -35,18 +35,21 @@ replaced:
     - ip access-list extended 110
     - no 10 deny icmp 192.0.2.0 0.0.0.255 192.0.3.0 0.0.0.255 echo dscp ef ttl eq 10
     - 10 deny tcp 192.0.2.0 0.0.0.255 192.0.3.0 0.0.0.255 eq www syn dscp ef ttl eq 10
+    - ip access-list extended 123
+    - no 20 deny tcp 192.0.3.0 0.0.0.255 192.0.4.0 0.0.0.255 eq www ack dscp ef ttl lt 20
     - ip access-list extended 150
     - 20 deny tcp 198.51.100.0 0.0.0.255 eq telnet 198.51.110.0 0.0.0.255 eq telnet
       syn dscp ef ttl eq 10
 overridden:
   commands:
-    - no ip access-list extended 123
     - no ip access-list extended test_acl
     - no ipv6 access-list R1_TRAFFIC
     - ip access-list extended 110
     - no 10 deny icmp 192.0.2.0 0.0.0.255 192.0.3.0 0.0.0.255 echo dscp ef ttl eq 10
     - 10 deny tcp 198.51.100.0 0.0.0.255 eq telnet 198.51.110.0 0.0.0.255 eq www ack
       dscp ef ttl eq 10
+    - ip access-list extended 123
+    - no 20 deny tcp 192.0.3.0 0.0.0.255 192.0.4.0 0.0.0.255 eq www ack dscp ef ttl lt 20
     - ip access-list extended 150
     - deny tcp 198.51.100.0 0.0.0.255 eq telnet 198.51.110.0 0.0.0.255 eq telnet syn
       dscp ef ttl eq 10
@@ -160,8 +163,6 @@ rtt:
   commands:
     - no ip access-list extended 150
     - ip access-list extended 123
-    - 10 deny tcp 198.51.100.0 0.0.0.255 198.51.101.0 0.0.0.255 eq telnet ack tos
-      12
     - 20 deny tcp 192.0.3.0 0.0.0.255 192.0.4.0 0.0.0.255 eq www ack dscp ef ttl lt
       20
     - ip access-list extended test_acl
