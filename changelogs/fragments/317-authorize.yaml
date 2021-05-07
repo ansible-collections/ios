@@ -1,0 +1,3 @@
+---
+trivial:
+  - remove "authorize" from prepare_ios_tests as it is not a valid parameter anymore
