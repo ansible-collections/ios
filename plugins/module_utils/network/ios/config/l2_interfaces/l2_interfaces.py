@@ -391,8 +391,9 @@ class L2_Interfaces(ConfigBase):
                             if self.state == "merged" and diff
                             else self.trunk_cmds["allowed_vlans"]
                         )
-                        cmd = trunk_cmd + " {0}".format(allowed_vlans)
-                        add_command_to_config_list(interface, cmd, commands)
+                        if self.state != "merged" or (have_trunk and diff):
+                            cmd = trunk_cmd + " {0}".format(allowed_vlans)
+                            add_command_to_config_list(interface, cmd, commands)
                 if pruning_vlans and self._check_for_correct_vlan_range(
                     pruning_vlans, module
                 ):
