@@ -47,7 +47,7 @@ options:
         description:
         - IPv4 address to be set for the Layer-3 interface mentioned in I(name) option.
           The address format is <ipv4 address>/<mask>, the mask is number in range
-          0-32 eg. 192.168.0.1/24.
+          0-32 eg. 192.0.2.1/24.
         type: list
         elements: dict
         suboptions:
@@ -74,7 +74,7 @@ options:
         description:
         - IPv6 address to be set for the Layer-3 interface mentioned in I(name) option.
         - The address format is <ipv6 address>/<mask>, the mask is number in range
-          0-128 eg. fd5d:12c9:2201:1::1/64
+          0-128 eg. 2001:DB8:0:1::/64
         type: list
         elements: dict
         suboptions:
@@ -150,17 +150,17 @@ EXAMPLES = """
     config:
     - name: GigabitEthernet0/1
       ipv4:
-      - address: 192.168.0.1/24
+      - address: 192.0.2.1/24
         secondary: true
     - name: GigabitEthernet0/2
       ipv4:
-      - address: 192.168.0.2/24
+      - address: 192.0.2.2/24
     - name: GigabitEthernet0/3
       ipv6:
-      - address: fd5d:12c9:2201:1::1/64
+      - address: 2001:DB8:0:1::/64
     - name: GigabitEthernet0/3.100
       ipv4:
-      - address: 192.168.0.3/24
+      - address: 198.51.100.1/24
     state: merged
 
 # After state:
@@ -170,20 +170,20 @@ EXAMPLES = """
 # interface GigabitEthernet0/1
 #  description Configured by Ansible
 #  ip address 10.1.1.1 255.255.255.0
-#  ip address 192.168.0.1 255.255.255.0 secondary
+#  ip address 192.0.2.1 255.255.255.0 secondary
 #  duplex auto
 #  speed auto
 # interface GigabitEthernet0/2
 #  description This is test
-#  ip address 192.168.0.2 255.255.255.0
+#  ip address 192.0.2.2 255.255.255.0
 #  duplex auto
 #  speed 1000
 # interface GigabitEthernet0/3
 #  description Configured by Ansible Network
-#  ipv6 address FD5D:12C9:2201:1::1/64
+#  ipv6 address 2001:DB8:0:1::/64
 # interface GigabitEthernet0/3.100
 #  encapsulation dot1Q 20
-#  ip address 192.168.0.3 255.255.255.0
+#  ip address 198.51.100.1 255.255.255.0
 
 # Using replaced
 #
@@ -203,17 +203,17 @@ EXAMPLES = """
 #  speed 1000
 # interface GigabitEthernet0/3
 #  description Configured by Ansible Network
-#  ip address 192.168.2.0 255.255.255.0
+#  ip address 198.51.100.1 255.255.255.0
 # interface GigabitEthernet0/3.100
 #  encapsulation dot1Q 20
-#  ip address 192.168.0.2 255.255.255.0
+#  ip address 198.51.100.2 255.255.255.0
 
 - name: Replaces device configuration of listed interfaces with provided configuration
   cisco.ios.ios_l3_interfaces:
     config:
     - name: GigabitEthernet0/2
       ipv4:
-      - address: 192.168.2.0/24
+      - address: 192.0.2.1/24
     - name: GigabitEthernet0/3
       ipv4:
       - address: dhcp
@@ -221,7 +221,7 @@ EXAMPLES = """
         dhcp_hostname: test.com
     - name: GigabitEthernet0/3.100
       ipv4:
-      - address: 192.168.0.3/24
+      - address: 198.51.100.3/24
         secondary: true
     state: replaced
 
@@ -236,7 +236,7 @@ EXAMPLES = """
 #  speed auto
 # interface GigabitEthernet0/2
 #  description This is test
-#  ip address 192.168.2.1 255.255.255.0
+#  ip address 192.0.2.1 255.255.255.0
 #  duplex auto
 #  speed 1000
 # interface GigabitEthernet0/3
@@ -244,8 +244,8 @@ EXAMPLES = """
 #  ip address dhcp client-id GigabitEthernet0/2 hostname test.com
 # interface GigabitEthernet0/3.100
 #  encapsulation dot1Q 20
-#  ip address 192.168.0.2 255.255.255.0
-#  ip address 192.168.0.3 255.255.255.0 secondary
+#  ip address 198.51.100.2 255.255.255.0
+#  ip address 198.51.100.3 255.255.255.0 secondary
 
 # Using overridden
 #
@@ -260,23 +260,23 @@ EXAMPLES = """
 #  speed auto
 # interface GigabitEthernet0/2
 #  description This is test
-#  ip address 192.168.2.1 255.255.255.0
+#  ip address 198.51.100.1 255.255.255.0
 #  duplex auto
 #  speed 1000
 # interface GigabitEthernet0/3
 #  description Configured by Ansible Network
-#  ipv6 address FD5D:12C9:2201:1::1/64
+#  ipv6 address 2001:DB8:0:1::/64
 # interface GigabitEthernet0/3.100
 #  encapsulation dot1Q 20
-#  ip address 192.168.0.2 255.255.255.0
+#  ip address 192.0.2.1 255.255.255.0
 
 - name: Override device configuration of all interfaces with provided configuration
   cisco.ios.ios_l3_interfaces:
     config:
     - name: GigabitEthernet0/2
       ipv4:
-      - address: 192.168.0.1/24
-    - name: GigabitEthernet0/3.100
+      - address: 192.0.2.1/24
+    - name: GigabitEthernet0/3
       ipv6:
       - address: autoconfig
     state: overridden
@@ -292,14 +292,14 @@ EXAMPLES = """
 #  speed auto
 # interface GigabitEthernet0/2
 #  description This is test
-#  ip address 192.168.0.1 255.255.255.0
+#  ip address 192.0.2.1 255.255.255.0
 #  duplex auto
 #  speed 1000
 # interface GigabitEthernet0/3
 #  description Configured by Ansible Network
+#  ipv6 address autoconfig
 # interface GigabitEthernet0/3.100
 #  encapsulation dot1Q 20
-#  ipv6 address autoconfig
 
 # Using Deleted
 #
@@ -308,23 +308,23 @@ EXAMPLES = """
 #
 # vios#show running-config | section ^interface
 # interface GigabitEthernet0/1
-#  ip address 192.0.2.10 255.255.255.0
+#  ip address 192.0.2.1 255.255.255.0
 #  shutdown
 #  duplex auto
 #  speed auto
 # interface GigabitEthernet0/2
 #  description Configured by Ansible Network
-#  ip address 192.168.1.0 255.255.255.0
+#  ip address 198.51.100.1 255.255.255.0
 # interface GigabitEthernet0/3
 #  description Configured by Ansible Network
-#  ip address 192.168.0.1 255.255.255.0
+#  ip address 198.51.101.1 255.255.255.0
 #  shutdown
 #  duplex full
 #  speed 10
-#  ipv6 address FD5D:12C9:2201:1::1/64
+#  ipv6 address 2001:DB8:0:1::/64
 # interface GigabitEthernet0/3.100
 #  encapsulation dot1Q 20
-#  ip address 192.168.0.2 255.255.255.0
+#  ip address 198.51.101.2 255.255.255.0
 
 - name: "Delete attributes of given interfaces (NOTE: This won't delete the interface sitself)"
   cisco.ios.ios_l3_interfaces:
@@ -347,11 +347,11 @@ EXAMPLES = """
 #  no ip address
 # interface GigabitEthernet0/3
 #  description Configured by Ansible Network
-#  ip address 192.168.0.1 255.255.255.0
+#  ip address 198.51.101.1 255.255.255.0
 #  shutdown
 #  duplex full
 #  speed 10
-#  ipv6 address FD5D:12C9:2201:1::1/64
+#  ipv6 address 2001:DB8:0:1::/64
 # interface GigabitEthernet0/3.100
 #  encapsulation dot1Q 20
 
@@ -364,23 +364,23 @@ EXAMPLES = """
 #
 # vios#show running-config | section ^interface
 # interface GigabitEthernet0/1
-#  ip address 192.0.2.10 255.255.255.0
+#  ip address 192.0.2.1 255.255.255.0
 #  shutdown
 #  duplex auto
 #  speed auto
 # interface GigabitEthernet0/2
 #  description Configured by Ansible Network
-#  ip address 192.168.1.0 255.255.255.0
+#  ip address 198.51.100.0 255.255.255.0
 # interface GigabitEthernet0/3
 #  description Configured by Ansible Network
-#  ip address 192.168.0.1 255.255.255.0
+#  ip address 198.51.101.1 255.255.255.0
 #  shutdown
 #  duplex full
 #  speed 10
-#  ipv6 address FD5D:12C9:2201:1::1/64
+#  ipv6 address 2001:DB8:0:1::/64
 # interface GigabitEthernet0/3.100
 #  encapsulation dot1Q 20
-#  ip address 192.168.0.2 255.255.255.0
+#  ip address 192.0.2.2 255.255.255.0
 
 - name: "Delete L3 attributes of ALL interfaces together (NOTE: This won't delete the interface itself)"
   cisco.ios.ios_l3_interfaces:
@@ -494,7 +494,7 @@ EXAMPLES = """
 #         "interface GigabitEthernet0/2",
 #         "ip address 198.51.100.1 255.255.255.0 secondary",
 #         "ip address 198.51.100.2 255.255.255.0",
-#         "ipv6 address 2001:db8:0:3::/64"
+#         "ipv6 address 2001:DB8:0:3::/64"
 #     ]
 
 # Using Parsed
@@ -508,7 +508,7 @@ EXAMPLES = """
 # interface GigabitEthernet0/2
 # ip address 198.51.100.1 255.255.255.0
 # secondary ip address 198.51.100.2 255.255.255.0
-# ipv6 address 2001:db8:0:3::/64
+# ipv6 address 2001:DB8:0:3::/64
 
 - name: Parse the commands for provided configuration
   cisco.ios.ios_l3_interfaces:
@@ -541,7 +541,7 @@ EXAMPLES = """
 #             ],
 #             "ipv6": [
 #                 {
-#                     "address": "2001:db8:0:3::/64"
+#                     "address": "2001:DB8:0:3::/64"
 #                 }
 #             ],
 #             "name": "GigabitEthernet0/2"
@@ -565,7 +565,7 @@ commands:
   description: The set of commands pushed to the remote device
   returned: always
   type: list
-  sample: ['interface GigabitEthernet0/1', 'ip address 192.168.0.2 255.255.255.0']
+  sample: ['interface GigabitEthernet0/1', 'ip address 198.51.100.1 255.255.255.0']
 """
 
 from ansible.module_utils.basic import AnsibleModule

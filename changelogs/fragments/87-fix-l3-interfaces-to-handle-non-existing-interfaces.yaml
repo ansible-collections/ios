@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Add fix for handling non-existing interfaces via L3_interfaces, also it fixes autoconfig and secondary IP issues (https://github.com/ansible-collections/cisco.ios/pull/87)
