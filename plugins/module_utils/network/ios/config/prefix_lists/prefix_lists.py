@@ -113,6 +113,11 @@ class Prefix_lists(ResourceModule):
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
+        # alligning cmd with negate cmd 1st followed by config cmd
+        if self.state in ["overridden", "replaced"]:
+            self.commands = [
+                each for each in self.commands if "no" in each
+            ] + [each for each in self.commands if "no" not in each]
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
