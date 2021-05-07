@@ -68,6 +68,7 @@
         key_id: 10
         auth_key: 15435A030726242723273C21181319000A
         auth: true
+        vrf: my_mgmt_vrf
         state: present
         provider: '{{ cli }}'
 

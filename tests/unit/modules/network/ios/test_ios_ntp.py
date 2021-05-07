@@ -64,6 +64,7 @@ class TestIosNtpModule(TestIosModule):
                 auth=True,
                 auth_key="15435A030726242723273C21181319000A",
                 key_id="10",
+                vrf= "my_mgmt_vrf",
                 state="present",
             )
         )
@@ -81,9 +82,10 @@ class TestIosNtpModule(TestIosModule):
                 auth_key="15435A030726242723273C21181319000A",
                 key_id="10",
                 state="present",
+                vrf= "my_mgmt_vrf",
             )
         )
-        commands = ["ntp server 10.75.33.5", "ntp source Vlan2"]
+        commands = ["ntp server my_mgmt_vrf 10.75.33.5", "ntp source Vlan2"]
         self.execute_module(changed=True, commands=commands)
 
     def test_ios_ntp_remove(self):
@@ -96,11 +98,12 @@ class TestIosNtpModule(TestIosModule):
                 auth=True,
                 auth_key="15435A030726242723273C21181319000A",
                 key_id="10",
+                vrf= "my_mgmt_vrf",
                 state="absent",
             )
         )
         commands = [
-            "no ntp server 10.75.32.5",
+            "no ntp server my_mgmt_vrf 10.75.32.5",
             "no ntp source Loopback0",
             "no ntp access-group peer NTP_ACL",
             "no ntp logging",
