@@ -1,0 +1,80 @@
+---
+- debug:
+    msg:
+      Start ios_logging_global rendered integration tests ansible_connection={{
+      ansible_connection }}
+
+- block:
+    - name: TEST - [rendered] Render the commands for provided  configuration
+      register: result
+      cisco.ios.ios_logging_global:
+        config:
+          - buginf: true
+          - buffered:
+              severity: notifications
+              size: 5099
+              xml: true
+          - cns_events: warnings
+          - console:
+              severity: critical
+              xml: true
+          - count: true
+          - delimiter:
+              tcp: true
+          - discriminator: msglog01 severity includes 5
+          - dmvpn:
+              rate_limit: 10
+          - esm:
+              config: true
+          - exception: 4099
+          - facility: local5
+          - filter:
+              - url: tftp://172.16.2.18/ESM/elate.tcl
+                args: TESTInst2
+              - url: tftp://172.16.2.14/ESM/escalate.tcl
+                args: TESTInst
+          - history:
+              severity: alerts
+          - hosts:
+              - hostname: 172.16.1.1
+              - hostname: 172.16.1.11
+                xml: true
+                transport:
+                  tcp:
+                    port: 514
+              - hostname: 172.16.1.10
+                filtered: true
+                stream: 10
+          - message_counter:
+              - log
+              - syslog
+          - monitor:
+              severity: warnings
+          - origin_id:
+              tag: hostname
+          - persistent:
+              batch: 4444
+          - policy_firewall:
+              rate_limit: 10
+          - queue_limit:
+              esm: 150
+          - rate_limit:
+              all: true
+              size: 2
+              except_severity: alerts
+          - reload:
+              severity: alerts
+          - server_arp: true
+          - snmp_trap: errors
+          - source_interface:
+              - interface: GBit1/0
+              - interface: CTunnel2
+          - trap: errors
+          - userinfo: true
+          - logging_on: disable
+        state: rendered
+
+    - assert:
+        that:
+          - result.changed == false
+          - result.rendered|symmetric_difference(rendered.commands) == []

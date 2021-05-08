@@ -1,0 +1,14 @@
+---
+- debug:
+    msg: START ios_logging_global parsed integration tests on connection={{ ansible_connection }}
+
+- name: TEST - [parsed] Parse the commands for provided configuration
+  register: result
+  cisco.ios.ios_logging_global:
+    running_config: "{{ lookup('file', '_parsed.cfg') }}"
+    state: parsed
+
+- assert:
+    that:
+      - result.changed == false
+      - parsed['after']|symmetric_difference(result.parsed) == []

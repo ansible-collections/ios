@@ -1,0 +1,57 @@
+---
+- debug:
+    msg: Start Merged integration state for ios_logging ansible_connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: TEST - [merged] Apply provided configuration
+      cisco.ios.ios_logging_global:
+        config:
+          - buffered:
+              severity: notifications
+              size: 5099
+              xml: true
+          - console:
+              severity: critical
+              xml: true
+          - facility: local5
+          - hosts:
+              - hostname: 172.16.1.12
+              - hostname: 172.16.1.11
+                xml: true
+              - hostname: 172.16.1.10
+                filtered: true
+                stream: 10
+              - hostname: 172.16.1.13
+                transport:
+                  tcp:
+                    port: 514
+          - monitor:
+              severity: warnings
+          - message_counter:
+              - log
+              - syslog
+          - snmp_trap:
+              - errors
+          - trap: errors
+          - userinfo: true
+          - policy_firewall:
+              rate_limit: 10
+          - logging_on: enable
+          - exception: 4099
+          - dmvpn:
+              rate_limit: 10
+          - cns_events: warnings
+        state: merged
+      register: result
+
+    - name: TEST - [merged] Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ merged['commands'] | symmetric_difference(result['commands']) |\
+            \ length == 0 }}"
+
+  always:
+    - include_tasks: _remove_config.yaml

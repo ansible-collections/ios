@@ -1,0 +1,34 @@
+---
+- debug:
+    msg:
+      START Overridden ios_logging_global state for integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: TEST - [overridden] Override provided logging configuration
+      register: result
+      cisco.ios.ios_logging_global:
+        config:
+          - monitor:
+              severity: critical
+          - buffered:
+              severity: warnings
+              xml: true
+              size: 5099
+          - facility: local6
+          - hosts:
+              - hostname: 172.16.1.12
+                xml: true
+        state: overridden
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ overridden['commands'] | symmetric_difference(result['commands'])\
+            \ | length == 0 }}"
+
+  always:
+    - include_tasks: _remove_config.yaml
